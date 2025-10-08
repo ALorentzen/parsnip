@@ -17,5 +17,4 @@ $src     = $img_id ? wp_get_attachment_image_url($img_id, 'full') : '';
       <div class="mt-4 prose prose-invert"><?= wp_kses_post($content) ?></div>
     <?php endif; ?>
   </div>
-
 </section>
