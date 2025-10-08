@@ -1,0 +1,20 @@
+{
+  "name": "anderslorentzen/parsnip",
+  "type": "wordpress-theme",
+  "require": {
+    "php": "^8.3",
+    "composer/installers": "^2.2"
+  },
+  "repositories": [
+    { "type": "composer", "url": "https://wpackagist.org" }
+  ],
+  "extra": {
+    "installer-paths": {
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  }
+}

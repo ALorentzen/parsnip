@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"
+     fill="white" stroke="#000" stroke-width="3"
+     stroke-linecap="round" stroke-linejoin="round"
+     vector-effect="non-scaling-stroke" aria-labelledby="title" class="w-12">
+  <title>Parsnip</title>
+
+  <!-- stem + leaves -->
+  <path d="M32 8v6" />
+  <path d="M32 8c4-3 9-3 12 0-3 1.8-6 3.8-8.5 5" />
+  <path d="M32 8c-4-3-9-3-12 0 3 1.8 6 3.8 8.5 5" />
+
+  <!-- root outline -->
+  <path d="M32 14
+           C44 14 49 19 47 28
+           C45 40 36 50 32 56
+           C28 50 19 40 17 28
+           C15 19 20 14 32 14 Z"/>
+
+  <!-- inner rings (shorter, don’t touch outline) -->
+  <line x1="28" y1="31" x2="36" y2="31"/>
+  <line x1="26" y1="36" x2="38" y2="36"/>
+  <line x1="28" y1="41" x2="36" y2="41"/>
+</svg>
