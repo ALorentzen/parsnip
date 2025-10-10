@@ -1,26 +1,39 @@
 <?php
 $nav = get_nav_menu_locations();
-$menu_id = $nav['primary'] ?? 0;
+$menu_id = $nav["primary"] ?? 0;
 $items = $menu_id ? wp_get_nav_menu_items($menu_id) : [];
 ?>
 
-<nav class="absolute w-full flex justify-between items-center bg-gradient to-b from-neutral-800 to-transparent text-white text-2xl z-[5000]">
-    <section>
-        <a href="/">
-            <?php get_template_part('template-parts/svg/parsnip-logo'); ?>
-        </a>
-    </section>
-    <ul class="flex gap-12 z-1000">
-        <?php foreach ($items as $item): ?>
-            <li class="flex flex-col gap-1 group w-full">
-                <a href="<?= esc_url($item->url) ?>" class="w-full group-hover:transition-all ease-in-out decoration-0 group-hover:decoration-2">
-                    <?= esc_html($item->title) ?>
-                    <hr class="w-0 h-0 group-hover:w-full group-hover:h-full transition-all ease-in-out border-t-2">
-                </a>
-            </li>
-        <?php endforeach; ?>
-        <li>
-            <a href="<?= esc_url(site_url('/')) ?>" class="text-pink-400"></a>
-        </li>
-    </ul>
+<nav class="fixed w-full flex justify-between items-center text-white z-[6000] px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
+  <a href="/" data-react="sitelogo" aria-label="Home"></a>
+
+  <div
+    class="lg:hidden block w-12 h-12"
+    data-react="hamburger"
+    data-target="#mobile-menu"
+    data-class="lg:hidden block w-12 h-12">
+  </div>
+
+  <!-- Desktop -->
+  <ul class="hidden lg:flex gap-12 text-white">
+    <?php foreach ($items as $item): ?>
+      <li class="group">
+        <a class="px-3 py-2" href="<?= esc_url($item->url) ?>"><?= esc_html($item->title) ?></a>
+        <hr class="w-0 group-hover:w-[80%] h-0 group-hover-h-2 transition-all ease-in-out">
+      </li>
+    <?php endforeach; ?>
+  </ul>
 </nav>
+
+<!-- Mobile overlay (outside nav) -->
+<section
+  id="mobile-menu"
+  class="fixed inset-0 z-[5000] hidden lg:hidden items-center justify-center bg-neutral-900/80 backdrop-blur-2xl pt-24">
+  <ul class="flex flex-col gap-8 text-4xl text-white">
+    <?php foreach ($items as $item): ?>
+      <li><a class="block px-3 py-2" href="<?= esc_url($item->url) ?>"><?= esc_html(
+  $item->title,
+) ?></a></li>
+    <?php endforeach; ?>
+  </ul>
+</section>

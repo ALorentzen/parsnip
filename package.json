@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently -n VITE,TAILWIND -c auto \"vite\" \"pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --watch\"",
-    "build": "vite build && pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --minify"
+    "build": "vite build && pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --minify",
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -14,17 +17,32 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/cli": "^4.1.14",
+    "@types/node": "^24.7.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
     "@vitejs/plugin-react": "^5.0.4",
     "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4.1.14",
     "typescript": "^5.9.3",
-    "vite": "^7.1.9"
+    "vite": "^7.1.9",
+    "vite-plugin-full-reload": "^1.2.0"
   },
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
+  },
+    "lint-staged": {
+    "*.{php,js,ts,tsx,css}": "prettier --write"
+  },
+  "prettier": {
+    "plugins": ["@prettier/plugin-php"],
+    "phpVersion": "8.3",
+    "printWidth": 100,
+    "tabWidth": 2
   }
 }

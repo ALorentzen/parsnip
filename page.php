@@ -1,1 +1,1 @@
-<?php get_template_part('layouts/page'); ?>
+<?php get_template_part("layouts/page"); ?>
