@@ -1,4 +1,3 @@
-<?php get_header(); ?>
 <?php
 $show = get_field("enable_hero") === "show";
 $hero = get_field("hero") ?: [];
@@ -8,13 +7,12 @@ $hero = get_field("hero") ?: [];
   <?php if ($show) {
     get_template_part("template-parts/hero", null, ["hero" => $hero]);
   } ?>
+
   <div id="react-root" class="w-full min-h-screen h-full flex justify-around"></div>
 
   <section class="grid grid-cols-1 gap-64 relative lg:absolute -bottom-full right-0 max-w-lg w-full min-h-screen h-full px-4 lg:px-0">
     <div class="w-full h-full bg-white rounded-2xl p-8 text-black">
-      <div>
-        <h2 class="font-semibold text-lg">Test</h2>
-      </div>
+      <h2 class="font-semibold text-lg">Test</h2>
       <div class="space-y-2">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc cursus egestas mattis. Donec tempor eget turpis ullamcorper elementum. Donec a viverra ipsum. Nunc tincidunt consectetur risus vitae pretium.</p>
         <p>Nam nec fermentum risus. Fusce rutrum fringilla tellus eu vulputate. Nulla faucibus efficitur nisl eu pharetra.</p>
@@ -36,4 +34,3 @@ $hero = get_field("hero") ?: [];
     </div>
   </section>
 </main>
-<?php get_footer(); ?>
