@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+} /* Chrome/Safari */
+
 @layer base {
-  body { @apply bg-neutral-800  }
+  body {
+    @apply bg-neutral-800;
+  }
 }
