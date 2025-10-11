@@ -10,7 +10,7 @@ $hero = get_field("hero") ?: [];
 
   <div id="react-root" class="w-full min-h-screen h-full flex justify-around"></div>
 
-  <section class="grid grid-cols-1 gap-64 relative lg:absolute -bottom-full right-0 max-w-lg w-full min-h-screen h-full px-4 lg:px-0">
+  <section class="grid grid-cols-1 gap-64 relative lg:absolute -bottom-full right-0 max-w-lg w-full min-h-screen h-full px-4 lg:px-0 mr-12">
     <div class="w-full h-full bg-white rounded-2xl p-8 text-black">
       <h2 class="font-semibold text-lg">Test</h2>
       <div class="space-y-2">

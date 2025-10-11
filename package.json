@@ -22,6 +22,7 @@
     "@types/node": "^24.7.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-react": "^5.0.4",
     "concurrently": "^9.2.1",
     "husky": "^9.1.7",
@@ -36,11 +37,13 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
-    "lint-staged": {
+  "lint-staged": {
     "*.{php,js,ts,tsx,css}": "prettier --write"
   },
   "prettier": {
-    "plugins": ["@prettier/plugin-php"],
+    "plugins": [
+      "@prettier/plugin-php"
+    ],
     "phpVersion": "8.3",
     "printWidth": 100,
     "tabWidth": 2
