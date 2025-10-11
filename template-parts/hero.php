@@ -1,7 +1,7 @@
 <?php
 $hero = is_array($args["hero"] ?? null) ? $args["hero"] : [];
 $title = $hero["hero_title"] ?? "" ?: get_the_title();
-$content = $hero["hero_content"] ?? "";
+$content = get_field("hero_content") ?? "";
 $img_id = (int) ($hero["hero_image"] ?? 0);
 $src = $img_id ? wp_get_attachment_image_url($img_id, "full") : "";
 ?>
