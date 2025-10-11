@@ -1,4 +1,25 @@
 <?php
+
+// Ensure ACF JSON directory exists so local field groups can be stored in Git.
+add_action("init", function () {
+  $json_dir = get_stylesheet_directory() . "/_acf-json";
+  if (!is_dir($json_dir)) {
+    wp_mkdir_p($json_dir);
+  }
+});
+
+// Save ACF field groups to the theme-local JSON folder.
+add_filter("acf/settings/save_json", function () {
+  return get_stylesheet_directory() . "/_acf-json";
+});
+
+// Also load ACF field groups from the same folder.
+add_filter("acf/settings/load_json", function ($paths) {
+  $paths[] = get_stylesheet_directory() . "/_acf-json";
+  return array_unique(array_filter($paths));
+});
+
+// Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
 add_action("wp_enqueue_scripts", function () {
   if (is_admin()) {
     return;
@@ -123,6 +144,7 @@ add_action("wp_enqueue_scripts", function () {
   }
 });
 
+// Force production bundle to load as an ES module.
 add_filter(
   "script_loader_tag",
   function ($tag, $handle, $src) {
