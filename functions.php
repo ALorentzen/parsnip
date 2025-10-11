@@ -13,17 +13,75 @@ add_action("wp_enqueue_scripts", function () {
     wp_enqueue_style("parsnip-css", $uri . "/dist/theme.css", [], filemtime($css));
   }
 
-  // Dev: Vite on plain HTTP localhost:5173
-  $dev_origin = "http://localhost:5173";
-  $s = @fsockopen("127.0.0.1", 5173, $e, $m, 0.05);
-  if ($s) {
-    fclose($s);
-    wp_enqueue_script("vite-client", $dev_origin . "/@vite/client", [], null, true);
-    wp_script_add_data("vite-client", "type", "module");
+  $site_url = home_url("/");
+  $site_host = parse_url($site_url, PHP_URL_HOST) ?: "localhost";
+  $site_scheme = parse_url($site_url, PHP_URL_SCHEME) ?: "http";
 
-    wp_enqueue_script("parsnip-dev", $dev_origin . "/assets/js/main.tsx", [], null, true);
-    wp_script_add_data("parsnip-dev", "type", "module");
-    return; // stop here in dev
+  $dev_protocol = strtolower(getenv("VITE_DEV_PROTOCOL") ?: $site_scheme);
+  $dev_protocol = $dev_protocol === "http" ? "http" : "https";
+
+  $dev_host = getenv("VITE_DEV_HOST") ?: $site_host;
+  $dev_port = (int) (getenv("VITE_DEV_PORT") ?: 5173);
+
+  $default_port = $dev_protocol === "https" ? 443 : 80;
+  $port_segment = $dev_port === $default_port ? "" : ":" . $dev_port;
+  $dev_origin = sprintf("%s://%s%s", $dev_protocol, $dev_host, $port_segment);
+
+  $theme_path = parse_url($uri, PHP_URL_PATH) ?: "/wp-content/themes/parsnip";
+  $theme_path = rtrim($theme_path, "/");
+
+  $dev_up = false;
+  foreach (array_unique([$dev_host, "127.0.0.1", "localhost"]) as $probe_host) {
+    $socket = @fsockopen($probe_host, $dev_port, $errno, $errstr, 0.05);
+    if ($socket) {
+      fclose($socket);
+      $dev_up = true;
+      break;
+    }
+  }
+
+  if ($dev_up) {
+    $refresh_src = esc_url_raw($dev_origin . $theme_path . "/@react-refresh");
+    $client_src = esc_url_raw($dev_origin . $theme_path . "/@vite/client");
+    $entry_src = esc_url_raw($dev_origin . $theme_path . "/assets/js/main.tsx");
+
+    $print_module = static function (string $src): void {
+      if (function_exists("wp_print_script_tag")) {
+        echo wp_print_script_tag([
+          "type" => "module",
+          "src" => $src,
+          "crossorigin" => "anonymous",
+        ]);
+      } else {
+        printf('<script type="module" src="%s" crossorigin="anonymous"></script>', esc_url($src));
+      }
+      echo "\n";
+    };
+
+    add_action(
+      "wp_footer",
+      static function () use ($refresh_src, $client_src, $entry_src, $print_module): void {
+        $preamble = <<<JS
+        import RefreshRuntime from "{$refresh_src}";
+        RefreshRuntime.injectIntoGlobalHook(window);
+        window.\$RefreshReg\$ = () => {};
+        window.\$RefreshSig\$ = () => (type) => type;
+        window.__vite_plugin_react_preamble_installed__ = true;
+        JS;
+        if (function_exists("wp_print_inline_script_tag")) {
+          echo wp_print_inline_script_tag($preamble, ["type" => "module"]);
+        } else {
+          printf('<script type="module">%s</script>', $preamble);
+        }
+        echo "\n";
+
+        $print_module($client_src);
+        $print_module($entry_src);
+      },
+      0,
+    );
+
+    return;
   }
 
   // Prod: manifest
@@ -63,4 +121,11 @@ add_action("wp_enqueue_scripts", function () {
     wp_enqueue_script("parsnip", $uri . "/dist/assets/main.js", [], filemtime($plain), true);
     wp_script_add_data("parsnip", "type", "module");
   }
+});
+
+add_filter("script_loader_tag", function ($tag, $handle, $src) {
+  if (in_array($handle, ["parsnip"], true) && strpos($tag, "type=") === false) {
+    $tag = str_replace("<script ", '<script type="module" ', $tag);
+  }
+  return $tag;
 });

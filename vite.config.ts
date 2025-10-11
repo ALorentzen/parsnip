@@ -1,31 +1,53 @@
+import fs from "node:fs";
+import path from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import FullReload from "vite-plugin-full-reload";
-import basicSsl from "@vitejs/plugin-basic-ssl";
+import type { ServerOptions } from "vite";
 
 const DOMAIN = process.env.VITE_DEV_HOST ?? "parsnip.test";
 const PORT = Number(process.env.VITE_DEV_PORT ?? 5173);
-const USE_HTTPS = (process.env.VITE_DEV_PROTOCOL ?? "https").toLowerCase() !== "http";
+const PROTOCOL =
+  (process.env.VITE_DEV_PROTOCOL ?? "https").toLowerCase() === "http" ? "http" : "https";
+const USE_HTTPS = PROTOCOL === "https";
+
+const herdCertDir = path.join(
+  process.env.HOME ?? "",
+  "Library",
+  "Application Support",
+  "Herd",
+  "config",
+  "valet",
+  "Certificates",
+);
+const keyPath = path.join(herdCertDir, `${DOMAIN}.key`);
+const certPath = path.join(herdCertDir, `${DOMAIN}.crt`);
+
+const httpsOptions: ServerOptions["https"] =
+  USE_HTTPS && fs.existsSync(keyPath) && fs.existsSync(certPath)
+    ? {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath),
+      }
+    : USE_HTTPS
+      ? {}
+      : undefined;
 
 export default defineConfig({
-  plugins: [
-    react(),
-    FullReload(["**/*.php"], { delay: 200 }),
-    USE_HTTPS && basicSsl({ name: `${DOMAIN}-local`, domains: [DOMAIN, "localhost", "127.0.0.1"] }),
-  ].filter(Boolean),
+  plugins: [react(), FullReload(["**/*.php"], { delay: 200 })],
   base: "/wp-content/themes/parsnip/",
   server: {
     host: DOMAIN,
     port: PORT,
     strictPort: true,
-    https: USE_HTTPS ? {} : undefined,
+    https: httpsOptions,
     hmr: {
       host: DOMAIN,
       protocol: USE_HTTPS ? "wss" : "ws",
       port: PORT,
     },
-    cors: { origin: `https://${DOMAIN}` },
-    headers: { "Access-Control-Allow-Origin": `https://${DOMAIN}` },
+    cors: { origin: `${PROTOCOL}://${DOMAIN}` },
+    headers: { "Access-Control-Allow-Origin": `${PROTOCOL}://${DOMAIN}` },
     allowedHosts: [DOMAIN, "localhost", "127.0.0.1"],
   },
   build: {
