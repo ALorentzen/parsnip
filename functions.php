@@ -123,9 +123,14 @@ add_action("wp_enqueue_scripts", function () {
   }
 });
 
-add_filter("script_loader_tag", function ($tag, $handle, $src) {
-  if (in_array($handle, ["parsnip"], true) && strpos($tag, "type=") === false) {
-    $tag = str_replace("<script ", '<script type="module" ', $tag);
-  }
-  return $tag;
-});
+add_filter(
+  "script_loader_tag",
+  function ($tag, $handle, $src) {
+    if (in_array($handle, ["parsnip"], true) && strpos($tag, "type=") === false) {
+      $tag = str_replace("<script ", '<script type="module" ', $tag);
+    }
+    return $tag;
+  },
+  10,
+  3,
+);
