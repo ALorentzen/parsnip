@@ -1,6 +1,11 @@
 <?php
-$show = get_field("enable_hero") === "show";
-$hero = get_field("hero") ?: [];
+$hero = [];
+$show = false;
+
+if (function_exists("get_field")) {
+  $hero = get_field("hero") ?: [];
+  $show = get_field("enable_hero") === "show";
+}
 ?>
 
 <main class="min-h-screen p-8">

@@ -1,7 +1,26 @@
 <?php
-$nav = get_nav_menu_locations();
-$menu_id = $nav["primary"] ?? 0;
+$locations = get_nav_menu_locations();
+$menu_id = isset($locations["primary"]) ? (int) $locations["primary"] : 0;
+
+if (!$menu_id) {
+  foreach (wp_get_nav_menus() as $menu) {
+    if ($menu instanceof \WP_Term && $menu->count > 0) {
+      $menu_id = (int) $menu->term_id;
+      break;
+    }
+  }
+}
+
 $items = $menu_id ? wp_get_nav_menu_items($menu_id) : [];
+
+$items = array_values(
+  array_filter(
+    $items,
+    static fn($item) => $item instanceof \WP_Post && (int) $item->menu_item_parent === 0,
+  ),
+);
+
+usort($items, static fn($a, $b) => (int) $a->menu_order <=> (int) $b->menu_order);
 ?>
 
 <nav class="fixed w-full flex justify-between items-center text-white z-[6000] px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">

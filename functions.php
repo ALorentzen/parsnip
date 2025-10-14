@@ -1,23 +1,32 @@
 <?php
 
-// Ensure ACF JSON directory exists so local field groups can be stored in Git.
-add_action("init", function () {
-  $json_dir = get_stylesheet_directory() . "/_acf-json";
-  if (!is_dir($json_dir)) {
-    wp_mkdir_p($json_dir);
+// Theme bootstrap: supports, menus, and shared includes.
+add_action("after_setup_theme", function (): void {
+  add_theme_support("title-tag");
+  add_theme_support("post-thumbnails");
+  add_theme_support("html5", [
+    "comment-form",
+    "comment-list",
+    "gallery",
+    "caption",
+    "style",
+    "script",
+  ]);
+
+  register_nav_menus([
+    "primary" => __("Primary Menu", "parsnip"),
+  ]);
+
+  $inc_dir = get_template_directory() . "/inc";
+  if (!is_dir($inc_dir)) {
+    return;
+  }
+  foreach (glob($inc_dir . "/*.php") ?: [] as $file) {
+    require_once $file;
   }
 });
 
-// Save ACF field groups to the theme-local JSON folder.
-add_filter("acf/settings/save_json", function () {
-  return get_stylesheet_directory() . "/_acf-json";
-});
-
-// Also load ACF field groups from the same folder.
-add_filter("acf/settings/load_json", function ($paths) {
-  $paths[] = get_stylesheet_directory() . "/_acf-json";
-  return array_unique(array_filter($paths));
-});
+require_once get_theme_file_path("inc/blocks.php");
 
 // Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
 add_action("wp_enqueue_scripts", function () {
@@ -156,3 +165,12 @@ add_filter(
   10,
   3,
 );
+
+add_action("enqueue_block_editor_assets", function () {
+  $dir = get_theme_file_path();
+  $uri = get_theme_file_uri();
+  $css = $dir . "/dist/theme.css";
+  if (is_readable($css)) {
+    wp_enqueue_style("parsnip-editor-css", $uri . "/dist/theme.css", [], filemtime($css));
+  }
+});
