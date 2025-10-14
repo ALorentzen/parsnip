@@ -8,6 +8,8 @@
     "skipLibCheck": true,
     "lib": ["ES2020", "DOM"],
     "types": ["react", "react-dom", "node"],
-    "baseUrl": "."
-  }
+    "baseUrl": ".",
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts", "**/*.tsx", "types/wp.d.ts"]
 }

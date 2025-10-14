@@ -1,0 +1,13 @@
+{
+  "apiVersion": 3,
+  "name": "parsnip/simple-quote",
+  "title": "Simple Quote",
+  "category": "text",
+  "icon": "format-quote",
+  "supports": { "html": false },
+  "attributes": {
+    "content": { "type": "string", "source": "html", "selector": "p" },
+    "cite": { "type": "string", "source": "html", "selector": "cite" }
+  },
+  "editorScript": "file:./index.js"
+}
