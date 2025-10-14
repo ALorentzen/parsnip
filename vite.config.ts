@@ -64,7 +64,21 @@ const httpsOptions: ServerOptions["https"] =
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: "classic",
+      babel: {
+        plugins: [
+          [
+            "@babel/plugin-transform-react-jsx",
+            {
+              runtime: "classic",
+              pragma: "wp.element.createElement",
+              pragmaFrag: "wp.element.Fragment",
+            },
+          ],
+        ],
+      },
+    }),
     FullReload(["**/*.php"], { delay: 200 }),
     viteStaticCopy({ targets: copyTargets }),
   ],
