@@ -132,6 +132,7 @@ add_action("wp_enqueue_scripts", function () {
   $vite = parsnip_get_vite_env();
 
   if ($vite["is_up"]) {
+    wp_enqueue_script("wp-element");
     $refresh_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/@react-refresh");
     $client_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/@vite/client");
     $entry_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/assets/js/main.tsx");
@@ -182,7 +183,13 @@ add_action("wp_enqueue_scripts", function () {
     $file = ltrim($manifest[$entry]["file"], "/");
     $path = $paths["dir"] . "/dist/" . $file;
     if (is_readable($path)) {
-      wp_enqueue_script("parsnip", $paths["uri"] . "/dist/" . $file, [], filemtime($path), true);
+      wp_enqueue_script(
+        "parsnip",
+        $paths["uri"] . "/dist/" . $file,
+        ["wp-element"],
+        filemtime($path),
+        true,
+      );
       wp_script_add_data("parsnip", "type", "module");
     }
     foreach ($manifest[$entry]["css"] ?? [] as $i => $rel) {
@@ -202,7 +209,7 @@ add_action("wp_enqueue_scripts", function () {
     wp_enqueue_script(
       "parsnip",
       $paths["uri"] . "/dist/assets/main.js",
-      [],
+      ["wp-element"],
       filemtime($plain),
       true,
     );

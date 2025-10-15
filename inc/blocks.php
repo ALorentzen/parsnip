@@ -9,6 +9,8 @@ add_action("init", function (): void {
 
   $vite = parsnip_get_vite_env();
   $theme_uri = $paths["uri"];
+  $editor_scripts = [];
+  $editor_styles = [];
 
   foreach (glob($blocks_dir . "/*", GLOB_ONLYDIR) as $source_dir) {
     $metadata_path = $source_dir . "/block.json";
@@ -38,7 +40,6 @@ add_action("init", function (): void {
     if ($vite["is_up"]) {
       $script_url = $vite["origin"] . $vite["theme_path"] . "/blocks/{$slug}/index.tsx";
       wp_register_script($handle, $script_url, $dependencies, $version, true);
-      wp_script_add_data($handle, "type", "module");
     } else {
       $script_path = $paths["dir"] . "/dist/blocks/{$slug}/index.js";
       if (!is_readable($script_path)) {
@@ -48,6 +49,8 @@ add_action("init", function (): void {
       $script_version = filemtime($script_path);
       wp_register_script($handle, $script_url, $dependencies, $script_version, true);
     }
+    wp_script_add_data($handle, "type", "module");
+    $editor_scripts[] = $handle;
 
     $style_handles = [];
     foreach (["style.css" => "style", "editor.css" => "editor_style"] as $file => $property) {
@@ -57,6 +60,7 @@ add_action("init", function (): void {
         $style_url = $vite["origin"] . $vite["theme_path"] . "/blocks/{$slug}/{$file}";
         wp_register_style($style_handle, $style_url, [], null);
         $style_handles[$property] = $style_handle;
+        $editor_styles[] = $style_handle;
         continue;
       }
 
@@ -72,6 +76,7 @@ add_action("init", function (): void {
         filemtime($style_path),
       );
       $style_handles[$property] = $style_handle;
+      $editor_styles[] = $style_handle;
     }
 
     register_block_type_from_metadata(
@@ -81,6 +86,21 @@ add_action("init", function (): void {
         "style" => $style_handles["style"] ?? null,
         "editor_style" => $style_handles["editor_style"] ?? null,
       ]),
+    );
+  }
+
+  if ($editor_scripts !== []) {
+    add_action(
+      "enqueue_block_editor_assets",
+      static function () use ($editor_scripts, $editor_styles): void {
+        foreach (array_unique($editor_scripts) as $script_handle) {
+          wp_enqueue_script($script_handle);
+        }
+        foreach (array_unique($editor_styles) as $style_handle) {
+          wp_enqueue_style($style_handle);
+        }
+      },
+      1,
     );
   }
 });

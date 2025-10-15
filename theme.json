@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true,
+      "defaultPalette": false,
+      "custom": false,
+      "palette": [
+        { "name": "Parsnip Cream (Primary)",  "slug": "primary",   "color": "#F7F3E9" },
+        { "name": "Leaf Green (Secondary)",   "slug": "secondary", "color": "#2E6F4E" },
+        { "name": "Harvest Orange (Accent)",  "slug": "accent",    "color": "#E9892A" },
+        { "name": "Ink (Text)",               "slug": "ink",       "color": "#0F172A" },
+        { "name": "Snow (Text Inverse)",      "slug": "snow",      "color": "#FFFFFF" }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "name": "Parsnip UI (Helvetica Neue stack)",
+          "slug": "parsnip-helvetica-neue",
+          "fontFamily": "\"Helvetica Neue\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Arial, \"Noto Sans\", Ubuntu, Cantarell, \"Liberation Sans\", Helvetica, sans-serif"
+        }
+      ]
+    },
+    "custom": {
+      "color": {
+        "primary": "var:preset|color|primary",
+        "secondary": "var:preset|color|secondary",
+        "accent": "var:preset|color|accent",
+        "text": "var:preset|color|ink",
+        "textInverse": "var:preset|color|snow"
+      }
+    }
+  },
+  "styles": {
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--parsnip-helvetica-neue)",
+      "lineHeight": "1.5"
+    },
+    "color": {
+      "background": "var(--wp--preset--color--primary)",
+      "text": "var(--wp--preset--color--ink)"
+    },
+    "elements": {
+      "link": { "color": { "text": "var(--wp--preset--color--accent)" } }
+    },
+    "blocks": {
+      "core/button": {
+        "color": {
+          "background": "var(--wp--preset--color--accent)",
+          "text": "var(--wp--preset--color--snow)"
+        }
+      }
+    }
+  }
+}
