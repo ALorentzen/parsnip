@@ -4,10 +4,17 @@
   "title": "Simple Quote",
   "category": "text",
   "icon": "format-quote",
-  "supports": { "html": false },
+  "supports": { 
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    }
+  },
   "attributes": {
-    "content": { "type": "string", "source": "html", "selector": "p" },
-    "cite": { "type": "string", "source": "html", "selector": "cite" }
+    "quote": { "type": "string", "source": "html", "selector": "p" },
+    "credit": { "type": "string", "source": "html", "selector": "cite" }
   },
   "editorScript": "parsnip-simple-quote-editor"
 }

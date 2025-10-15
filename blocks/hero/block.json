@@ -4,7 +4,15 @@
   "title": "Hero",
   "category": "layout",
   "icon": "cover-image",
-  "supports": { "html": false, "anchor": false },
+  "supports": { 
+    "html": false, 
+    "anchor": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    }
+  },
   "attributes": {
     "headline": { "type": "string", "source": "html", "selector": "h1" },
     "text": { "type": "string", "source": "html", "selector": "p" },

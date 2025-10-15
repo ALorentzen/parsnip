@@ -6,7 +6,10 @@ import type * as i18n from "@wordpress/i18n";
 declare global {
   const wp: {
     blocks: typeof blocks;
-    blockEditor: typeof blockEditor;
+    blockEditor: typeof blockEditor & {
+      useBlockProps: blockEditor.useBlockProps;
+      RichText: typeof blockEditor.RichText;
+    };
     element: typeof element;
     i18n: typeof i18n;
   };

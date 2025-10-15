@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail -n TAILWIND,BLOCKS -c auto \"pnpm exec tailwindcss -i css/input.css -o dist/theme.css --watch --poll\" \"pnpm exec vite build --watch --emptyOutDir=false\"",
-    "build": "vite build && pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --minify",
+    "dev": "concurrently --kill-others-on-fail -n TAILWIND,BLOCKS -c auto \"pnpm exec tailwindcss -i assets/css/input.css -o dist/theme.css --watch --poll\" \"pnpm exec vite build --watch --emptyOutDir=false\"",
+    "build": "pnpm exec vite build && pnpm exec tailwindcss -i assets/css/input.css -o dist/theme.css --minify",
     "prepare": "husky",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -17,6 +17,7 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.27.1",
     "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/cli": "^4.1.14",
     "@types/node": "^24.7.0",

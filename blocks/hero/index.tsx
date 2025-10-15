@@ -13,8 +13,7 @@ type EditProps = {
   setAttributes: (attrs: Partial<Attributes>) => void;
 };
 
-const WRAPPER_BASE =
-  "relative w-full min-h-[400px] rounded-2xl overflow-hidden bg-neutral-900/80 bg-cover bg-center";
+const WRAPPER_BASE = "relative w-full overflow-hidden bg-cover bg-center max-h-[100dvh] h-full";
 const CONTENT_BASE = "absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none";
 const HEADLINE_CLASS = "text-6xl md:text-8xl font-extrabold leading-none";
 const TEXT_CLASS = "mt-6 text-xl md:text-2xl font-light";
@@ -23,7 +22,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   const { headline = "", text = "", mediaID = 0, mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps({
-    className: `${WRAPPER_BASE} ${mediaURL ? "" : "bg-neutral-700"}`,
+    className: WRAPPER_BASE,
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
@@ -66,7 +65,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
               <button
                 type="button"
                 onClick={open}
-                className="rounded-full bg-white/90 text-black px-4 py-2 text-sm font-semibold shadow"
+                className=" bg-white/90 text-black px-4 py-2 text-sm font-semibold shadow"
               >
                 {mediaURL
                   ? wp.i18n.__("Replace background", "parsnip")
@@ -99,12 +98,21 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   );
 };
 
-const blockName = metadata.name as string;
+// Only register blocks in the editor/admin context
+if (
+  typeof wp !== "undefined" &&
+  wp.blocks &&
+  wp.blockEditor &&
+  typeof window !== "undefined" &&
+  window.location.href.includes("wp-admin")
+) {
+  const blockName = metadata.name as string;
 
-const settings = {
-  ...metadata,
-  edit: Edit,
-  save: Save,
-} as unknown as BlockConfiguration<Attributes>;
+  const settings = {
+    ...metadata,
+    edit: Edit,
+    save: Save,
+  } as unknown as BlockConfiguration<Attributes>;
 
-wp.blocks.registerBlockType(blockName, settings);
+  wp.blocks.registerBlockType(blockName, settings);
+}

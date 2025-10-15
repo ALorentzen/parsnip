@@ -23,21 +23,36 @@ $items = array_values(
 usort($items, static fn($a, $b) => (int) $a->menu_order <=> (int) $b->menu_order);
 ?>
 
-<nav class="fixed w-full flex justify-between items-center text-white z-[6000] px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
-  <a href="/" data-react="sitelogo" aria-label="Home"></a>
+<nav class="relative w-full flex justify-between items-center text-white px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
+  <a href="/" aria-label="Home">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" stroke="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" class="h-12 w-auto text-white" role="img" aria-label="Parsnip">
+      <title>Parsnip</title>
+      <path d="M32 8v6" />
+      <path d="M32 8c4-3 9-3 12 0-3 1.8-6 3.8-8.5 5" />
+      <path d="M32 8c-4-3-9-3-12 0 3 1.8 6 3.8 8.5 5" />
+      <path d="M32 14 C44 14 49 19 47 28 C45 40 36 50 32 56 C28 50 19 40 17 28 C15 19 20 14 32 14 Z" />
+      <line x1="28" y1="31" x2="36" y2="31" />
+      <line x1="26" y1="36" x2="38" y2="36" />
+      <line x1="28" y1="41" x2="36" y2="41" />
+    </svg>
+  </a>
 
   <div
-    class="lg:hidden block w-12 h-12"
+    class="lg:hidden flex w-12 h-12 items-center justify-center cursor-pointer"
     data-react="hamburger"
     data-target="#mobile-menu"
-    data-class="lg:hidden block w-12 h-12">
+    data-class="lg:hidden flex w-12 h-12 z-[2000] items-center justify-center cursor-pointer">
+    <!-- Hamburger placeholder until React loads -->
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
   </div>
 
   <!-- Desktop -->
   <ul class="hidden lg:flex gap-12 text-white">
     <?php foreach ($items as $item): ?>
       <li class="group">
-        <a class="px-3 py-2" href="<?= esc_url($item->url) ?>"><?= esc_html($item->title) ?></a>
+        <a class="text-2xl" href="<?= esc_url($item->url) ?>"><?= esc_html($item->title) ?></a>
         <hr class="w-0 group-hover:w-[80%] h-0 group-hover-h-2 transition-all ease-in-out">
       </li>
     <?php endforeach; ?>
