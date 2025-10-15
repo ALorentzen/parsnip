@@ -1,5 +1,5 @@
 
-    <main class="grid grid-cols-auto min-h-[100dvh] lg:min-h-screen h-full relative lg:bg-[url('/wp-content/themes/parsnip/public/images/parsnip.png')] bg-cover">
+    <main class="grid grid-cols-auto min-h-[100dvh] lg:min-h-screen h-full relative">
       <section class="w-full flex justify-center px-4 py-16 text-white">
         <div class="max-w-3xl w-full space-y-10">
           <?php the_content(); ?>

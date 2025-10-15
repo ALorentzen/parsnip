@@ -1,21 +1,15 @@
 {
-  "apiVersion": 2,
+  "apiVersion": 3,
   "name": "parsnip/hero",
-  "title": "Hero Banner",
+  "title": "Hero",
   "category": "layout",
   "icon": "cover-image",
-  "description": "Full viewport hero with background image, title, and rich copy.",
-  "supports": {
-    "html": false,
-    "className": false,
-    "anchor": false
-  },
+  "supports": { "html": false, "anchor": false },
   "attributes": {
-    "title": { "type": "string", "default": "" },
-    "content": { "type": "string", "default": "" },
+    "headline": { "type": "string", "source": "html", "selector": "h1" },
+    "text": { "type": "string", "source": "html", "selector": "p" },
     "mediaID": { "type": "number", "default": 0 },
-    "mediaURL": { "type": "string", "default": "" },
-    "overlay": { "type": "boolean", "default": true }
+    "mediaURL": { "type": "string", "default": "" }
   },
-  "editorScript": "file:./index.js"
+  "editorScript": "parsnip-hero-editor"
 }

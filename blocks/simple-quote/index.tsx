@@ -12,11 +12,11 @@ type EditProps = {
 };
 
 const EDIT_WRAPPER_CLASSNAME =
-  "parsnip-simple-quote parsnip-simple-quote--editor bg-neutral-900/60 text-white rounded-xl border border-neutral-900 border-slate-500 px-6 py-5 space-y-4";
+  "parsnip-simple-quote parsnip-simple-quote--editor bg-neutral-100 border border-black px-4 py-2 rounded-lg shadow-lg";
 const FRONT_WRAPPER_CLASSNAME =
   "parsnip-simple-quote bg-white/80 text-neutral-900 border-l-4 border-neutral-500/70 px-6 py-5 rounded-xl shadow-lg space-y-3";
-const QUOTE_TEXT_CLASSNAME = "text-lg leading-relaxed";
-const QUOTE_CITE_CLASSNAME = "block text-sm font-semibold uppercase tracking-wide text-neutral-900";
+const QUOTE_TEXT_CLASSNAME = "text-lg leading-relaxed italic font-thin";
+const QUOTE_CITE_CLASSNAME = "block text-sm font-normal uppercase tracking-wide text-neutral-900";
 
 const Edit = ({ attributes, setAttributes }: EditProps) => {
   const wrapperProps = wp.blockEditor.useBlockProps({
@@ -50,12 +50,18 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
     className: FRONT_WRAPPER_CLASSNAME,
   });
 
-  const quote = attributes.content ?? "";
+  const quoteRaw = (attributes.content ?? "").trim();
+  const normalizedQuote = quoteRaw.replace(/^[\s"'“”]+|[\s"'“”]+$/g, "");
   const citation = attributes.cite ?? "";
+  const renderedQuote = normalizedQuote !== "" ? `“${normalizedQuote}”` : "";
 
   return (
     <blockquote {...wrapperProps}>
-      <wp.blockEditor.RichText.Content tagName="p" className={QUOTE_TEXT_CLASSNAME} value={quote} />
+      <wp.blockEditor.RichText.Content
+        tagName="p"
+        className={QUOTE_TEXT_CLASSNAME}
+        value={renderedQuote}
+      />
       {citation !== "" ? (
         <wp.blockEditor.RichText.Content
           tagName="cite"
@@ -67,12 +73,43 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   );
 };
 
+const deprecated = [
+  {
+    attributes: metadata.attributes,
+    save({ attributes }: { attributes: Partial<Attributes> }) {
+      const wrapperProps = wp.blockEditor.useBlockProps.save({
+        className: FRONT_WRAPPER_CLASSNAME,
+      });
+      const quote = attributes.content ?? "";
+      const citation = attributes.cite ?? "";
+
+      return (
+        <blockquote {...wrapperProps}>
+          <wp.blockEditor.RichText.Content
+            tagName="p"
+            className={QUOTE_TEXT_CLASSNAME}
+            value={quote}
+          />
+          {citation !== "" ? (
+            <wp.blockEditor.RichText.Content
+              tagName="cite"
+              className={QUOTE_CITE_CLASSNAME}
+              value={citation}
+            />
+          ) : null}
+        </blockquote>
+      );
+    },
+  },
+];
+
 const blockName = metadata.name as string;
 
 const settings = {
   ...metadata,
   edit: Edit,
   save: Save,
+  deprecated,
 } as unknown as BlockConfiguration<Attributes>;
 
 wp.blocks.registerBlockType(blockName, settings);

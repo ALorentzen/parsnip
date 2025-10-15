@@ -9,5 +9,5 @@
     "content": { "type": "string", "source": "html", "selector": "p" },
     "cite": { "type": "string", "source": "html", "selector": "cite" }
   },
-  "editorScript": "file:./index.js"
+  "editorScript": "parsnip-simple-quote-editor"
 }
