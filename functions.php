@@ -26,22 +26,34 @@ add_action("after_setup_theme", function (): void {
   }
 });
 
-require_once get_theme_file_path("inc/blocks.php");
-
-// Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
-add_action("wp_enqueue_scripts", function () {
-  if (is_admin()) {
-    return;
+function parsnip_get_theme_paths(): array
+{
+  static $paths = null;
+  if ($paths !== null) {
+    return $paths;
   }
 
   $dir = get_theme_file_path();
   $uri = get_stylesheet_directory_uri();
+  $path = parse_url($uri, PHP_URL_PATH) ?: "/wp-content/themes/parsnip";
 
-  // Tailwind (CLI output)
-  $css = $dir . "/dist/theme.css";
-  if (is_readable($css)) {
-    wp_enqueue_style("parsnip-css", $uri . "/dist/theme.css", [], filemtime($css));
+  $paths = [
+    "dir" => $dir,
+    "uri" => $uri,
+    "path" => rtrim($path, "/"),
+  ];
+
+  return $paths;
+}
+
+function parsnip_get_vite_env(): array
+{
+  static $env = null;
+  if ($env !== null) {
+    return $env;
   }
+
+  $paths = parsnip_get_theme_paths();
 
   $site_url = home_url("/");
   $site_host = parse_url($site_url, PHP_URL_HOST) ?: "localhost";
@@ -55,25 +67,74 @@ add_action("wp_enqueue_scripts", function () {
 
   $default_port = $dev_protocol === "https" ? 443 : 80;
   $port_segment = $dev_port === $default_port ? "" : ":" . $dev_port;
-  $dev_origin = sprintf("%s://%s%s", $dev_protocol, $dev_host, $port_segment);
+  $origin = sprintf("%s://%s%s", $dev_protocol, $dev_host, $port_segment);
 
-  $theme_path = parse_url($uri, PHP_URL_PATH) ?: "/wp-content/themes/parsnip";
-  $theme_path = rtrim($theme_path, "/");
-
-  $dev_up = false;
+  $is_up = false;
   foreach (array_unique([$dev_host, "127.0.0.1", "localhost"]) as $probe_host) {
     $socket = @fsockopen($probe_host, $dev_port, $errno, $errstr, 0.05);
     if ($socket) {
       fclose($socket);
-      $dev_up = true;
+      $is_up = true;
       break;
     }
   }
 
-  if ($dev_up) {
-    $refresh_src = esc_url_raw($dev_origin . $theme_path . "/@react-refresh");
-    $client_src = esc_url_raw($dev_origin . $theme_path . "/@vite/client");
-    $entry_src = esc_url_raw($dev_origin . $theme_path . "/assets/js/main.tsx");
+  $env = [
+    "protocol" => $dev_protocol,
+    "host" => $dev_host,
+    "port" => $dev_port,
+    "origin" => $origin,
+    "theme_path" => $paths["path"],
+    "is_up" => $is_up,
+  ];
+
+  return $env;
+}
+
+function parsnip_get_vite_manifest(): array
+{
+  static $manifest = null;
+  if ($manifest !== null) {
+    return $manifest;
+  }
+
+  $paths = parsnip_get_theme_paths();
+  $manifest_path = $paths["dir"] . "/dist/.vite/manifest.json";
+
+  if (!is_readable($manifest_path)) {
+    $manifest = [];
+    return $manifest;
+  }
+
+  $contents = file_get_contents($manifest_path);
+  $data = $contents !== false ? json_decode($contents, true) : null;
+  $manifest = is_array($data) ? $data : [];
+
+  return $manifest;
+}
+
+require_once get_theme_file_path("inc/blocks.php");
+
+// Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
+add_action("wp_enqueue_scripts", function () {
+  if (is_admin()) {
+    return;
+  }
+
+  $paths = parsnip_get_theme_paths();
+
+  // Tailwind (CLI output)
+  $css = $paths["dir"] . "/dist/theme.css";
+  if (is_readable($css)) {
+    wp_enqueue_style("parsnip-css", $paths["uri"] . "/dist/theme.css", [], filemtime($css));
+  }
+
+  $vite = parsnip_get_vite_env();
+
+  if ($vite["is_up"]) {
+    $refresh_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/@react-refresh");
+    $client_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/@vite/client");
+    $entry_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/assets/js/main.tsx");
 
     $print_module = static function (string $src): void {
       if (function_exists("wp_print_script_tag")) {
@@ -115,40 +176,36 @@ add_action("wp_enqueue_scripts", function () {
   }
 
   // Prod: manifest
-  $manifest = $dir . "/dist/.vite/manifest.json";
-  if (is_readable($manifest)) {
-    $m = json_decode(file_get_contents($manifest), true) ?: [];
-    $entry = "assets/js/main.tsx";
-
-    if (!empty($m[$entry]["file"])) {
-      $file = ltrim($m[$entry]["file"], "/");
-      $path = $dir . "/dist/" . $file;
-      wp_enqueue_script(
-        "parsnip",
-        $uri . "/dist/" . $file,
-        [],
-        file_exists($path) ? filemtime($path) : null,
-        true,
-      );
+  $manifest = parsnip_get_vite_manifest();
+  $entry = "assets/js/main.tsx";
+  if (!empty($manifest[$entry]["file"])) {
+    $file = ltrim($manifest[$entry]["file"], "/");
+    $path = $paths["dir"] . "/dist/" . $file;
+    if (is_readable($path)) {
+      wp_enqueue_script("parsnip", $paths["uri"] . "/dist/" . $file, [], filemtime($path), true);
       wp_script_add_data("parsnip", "type", "module");
     }
-    foreach ($m[$entry]["css"] ?? [] as $i => $rel) {
+    foreach ($manifest[$entry]["css"] ?? [] as $i => $rel) {
       $rel = ltrim($rel, "/");
-      $cpath = $dir . "/dist/" . $rel;
-      wp_enqueue_style(
-        "parsnip-vite-$i",
-        $uri . "/dist/" . $rel,
-        [],
-        file_exists($cpath) ? filemtime($cpath) : null,
-      );
+      $cpath = $paths["dir"] . "/dist/" . $rel;
+      if (!is_readable($cpath)) {
+        continue;
+      }
+      wp_enqueue_style("parsnip-vite-$i", $paths["uri"] . "/dist/" . $rel, [], filemtime($cpath));
     }
     return;
   }
 
   // Fallback
-  $plain = $dir . "/dist/assets/main.js";
+  $plain = $paths["dir"] . "/dist/assets/main.js";
   if (is_readable($plain)) {
-    wp_enqueue_script("parsnip", $uri . "/dist/assets/main.js", [], filemtime($plain), true);
+    wp_enqueue_script(
+      "parsnip",
+      $paths["uri"] . "/dist/assets/main.js",
+      [],
+      filemtime($plain),
+      true,
+    );
     wp_script_add_data("parsnip", "type", "module");
   }
 });

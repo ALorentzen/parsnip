@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently -n VITE,TAILWIND,BLD -c auto \"vite\" \"pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --watch\" \"vite build --watch\"",
+    "dev": "concurrently --kill-others-on-fail -n TAILWIND,BLOCKS -c auto \"pnpm exec tailwindcss -i css/input.css -o dist/theme.css --watch --poll\" \"pnpm exec vite build --watch --emptyOutDir=false\"",
     "build": "vite build && pnpm dlx @tailwindcss/cli -i css/input.css -o dist/theme.css --minify",
     "prepare": "husky",
     "format": "prettier --write .",
