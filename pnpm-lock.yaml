@@ -29,6 +29,9 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
+      parsnip:
+        specifier: 'link:'
+        version: 'link:'
       react:
         specifier: ^19.2.0
         version: 19.2.0

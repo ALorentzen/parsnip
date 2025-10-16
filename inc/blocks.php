@@ -48,32 +48,20 @@ add_action("init", function (): void {
       : [];
     $version = $asset_data["version"] ?? null;
 
-    if ($vite["is_up"]) {
-      $script_url = $vite["origin"] . $vite["theme_path"] . "/blocks/{$slug}/index.tsx";
-      wp_register_script($handle, $script_url, $dependencies, $version, true);
-    } else {
-      $script_path = $paths["dir"] . "/dist/blocks/{$slug}/index.js";
-      if (!is_readable($script_path)) {
-        continue;
-      }
-      $script_url = $theme_uri . "/dist/blocks/{$slug}/index.js";
-      $script_version = filemtime($script_path);
-      wp_register_script($handle, $script_url, $dependencies, $script_version, true);
+    // Always use built files - simpler and more reliable
+    $script_path = $paths["dir"] . "/dist/blocks/{$slug}/index.js";
+    if (!is_readable($script_path)) {
+      continue;
     }
+    $script_url = $theme_uri . "/dist/blocks/{$slug}/index.js";
+    $script_version = filemtime($script_path);
+    wp_register_script($handle, $script_url, $dependencies, $script_version, true);
     wp_script_add_data($handle, "type", "module");
     $editor_scripts[] = $handle;
 
     $style_handles = [];
     foreach (["style.css" => "style", "editor.css" => "editor_style"] as $file => $property) {
       $style_handle = sanitize_key("{$handle}-{$property}");
-
-      if ($vite["is_up"]) {
-        $style_url = $vite["origin"] . $vite["theme_path"] . "/blocks/{$slug}/{$file}";
-        wp_register_style($style_handle, $style_url, [], null);
-        $style_handles[$property] = $style_handle;
-        $editor_styles[] = $style_handle;
-        continue;
-      }
 
       $style_path = $paths["dir"] . "/dist/blocks/{$slug}/{$file}";
       if (!is_readable($style_path)) {

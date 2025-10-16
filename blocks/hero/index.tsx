@@ -1,5 +1,27 @@
 import type { BlockConfiguration } from "@wordpress/blocks";
-import metadata from "./block.json";
+
+const metadata = {
+  apiVersion: 3,
+  name: "parsnip/hero",
+  title: "Hero",
+  category: "layout",
+  icon: "cover-image",
+  supports: {
+    html: false,
+    anchor: false,
+    color: {
+      background: true,
+      text: true,
+      gradients: true,
+    },
+  },
+  attributes: {
+    headline: { type: "string", source: "html", selector: "h1" },
+    text: { type: "string", source: "html", selector: "p" },
+    mediaID: { type: "number", default: 0 },
+    mediaURL: { type: "string", default: "" },
+  },
+};
 
 type Attributes = {
   headline: string;
@@ -34,7 +56,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-12">
+      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none">
         <wp.blockEditor.RichText
           tagName="h1"
           className="text-6xl md:text-8xl font-extrabold leading-none"
@@ -88,7 +110,7 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-0">
+      <div className="absolute inset-x-0 bottom-12 p-8 text-white max-w-4xl pointer-events-none">
         <wp.blockEditor.RichText.Content
           tagName="h1"
           className="text-6xl md:text-8xl font-extrabold leading-none"
@@ -104,14 +126,8 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   );
 };
 
-// Only register blocks in the editor/admin context
-if (
-  typeof wp !== "undefined" &&
-  wp.blocks &&
-  wp.blockEditor &&
-  typeof window !== "undefined" &&
-  window.location.href.includes("wp-admin")
-) {
+// Register the block
+if (typeof wp !== "undefined" && wp.blocks && wp.blockEditor) {
   const blockName = metadata.name as string;
 
   const settings = {

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail -n TAILWIND,BLOCKS -c auto \"pnpm exec tailwindcss -i assets/css/input.css -o dist/theme.css --watch --poll\" \"pnpm exec vite build --watch --emptyOutDir=false\"",
+    "dev": "concurrently --kill-others-on-fail -n TAILWIND,VITE -c auto \"pnpm exec tailwindcss -i assets/css/input.css -o dist/theme.css --watch --poll\" \"pnpm exec vite build --watch --emptyOutDir=false\"",
     "build": "pnpm exec vite build && pnpm exec tailwindcss -i assets/css/input.css -o dist/theme.css --minify",
     "prepare": "husky",
     "format": "prettier --write .",
@@ -44,6 +44,7 @@
     "@wordpress/element": "^6.32.0",
     "@wordpress/i18n": "^6.5.0",
     "classnames": "^2.5.1",
+    "parsnip": "link:",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

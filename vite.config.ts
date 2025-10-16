@@ -15,20 +15,20 @@ function discoverBlocks(rootDir: string = process.cwd()) {
   const copyTargets: CopyTarget[] = [];
   if (!fs.existsSync(blocksDir)) return { entries, copyTargets };
 
-  for (const d of fs.readdirSync(blocksDir, { withFileTypes: true })) {
-    if (!d.isDirectory()) continue;
-    const name = d.name;
+  for (const dirEntry of fs.readdirSync(blocksDir, { withFileTypes: true })) {
+    if (!dirEntry.isDirectory()) continue;
+    const name = dirEntry.name;
     const dir = path.join(blocksDir, name);
     const entry = ["index.tsx", "index.ts", "index.js"]
-      .map((f) => path.join(dir, f))
+      .map((entryFileName) => path.join(dir, entryFileName))
       .find(fs.existsSync);
     if (!entry) continue;
     entries[name] = entry;
 
     // IMPORTANT: include index.asset.php so WP loads core deps before your script
-    for (const f of ["block.json", "style.css", "editor.css", "index.asset.php"]) {
-      const p = path.join(dir, f);
-      if (fs.existsSync(p)) copyTargets.push({ src: p, dest: `blocks/${name}` });
+    for (const fileName of ["block.json", "style.css", "editor.css", "index.asset.php"]) {
+      const filePath = path.join(dir, fileName);
+      if (fs.existsSync(filePath)) copyTargets.push({ src: filePath, dest: `blocks/${name}` });
     }
   }
   return { entries, copyTargets };
@@ -89,20 +89,32 @@ export default defineConfig({
     strictPort: true,
     https: httpsOptions,
     hmr: { host: DOMAIN, protocol: USE_HTTPS ? "wss" : "ws", port: PORT },
-    cors: { origin: `${PROTOCOL}://${DOMAIN}` },
-    headers: { "Access-Control-Allow-Origin": `${PROTOCOL}://${DOMAIN}` },
+    cors: {
+      origin: [`${PROTOCOL}://${DOMAIN}`, `${PROTOCOL}://www.${DOMAIN}`],
+      credentials: true,
+    },
+    headers: {
+      "Access-Control-Allow-Origin": `${PROTOCOL}://${DOMAIN}`,
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
     allowedHosts: [DOMAIN, "localhost", "127.0.0.1"],
   },
   build: {
     outDir: "dist",
     manifest: true,
+    minify: false,
     rollupOptions: {
       input: { theme: "assets/js/main.tsx", ...entries },
       output: {
-        entryFileNames: (c: ChunkInfo) =>
-          entries[c.name] ? `blocks/${c.name}/index.js` : "assets/main.js",
-        assetFileNames: (a: AssetInfo) =>
-          entries[a.name ?? ""] ? `blocks/${a.name}/[name][extname]` : "assets/[name][extname]",
+        entryFileNames: (chunkInfo: ChunkInfo) =>
+          entries[chunkInfo.name] ? `blocks/${chunkInfo.name}/index.js` : "assets/main.js",
+        assetFileNames: (assetInfo: AssetInfo) =>
+          entries[assetInfo.name ?? ""]
+            ? `blocks/${assetInfo.name}/[name][extname]`
+            : "assets/[name][extname]",
+        intro: (chunk) => (entries[chunk.name] ? "(function() {" : ""),
+        outro: (chunk) => (entries[chunk.name] ? "})();" : ""),
       },
     },
   },
