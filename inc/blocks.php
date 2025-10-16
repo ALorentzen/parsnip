@@ -7,6 +7,17 @@ add_action("init", function (): void {
     return;
   }
 
+  // Register shared editor style handle
+  $css = $paths["dir"] . "/dist/theme.css";
+  if (is_readable($css)) {
+    wp_register_style(
+      "parsnip-editor-style",
+      $paths["uri"] . "/dist/theme.css",
+      [],
+      filemtime($css),
+    );
+  }
+
   $vite = parsnip_get_vite_env();
   $theme_uri = $paths["uri"];
   $editor_scripts = [];

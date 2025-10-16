@@ -1,6 +1,6 @@
 
-    <main class="grid grid-cols-auto min-h-[100dvh]  h-full relative">
-      <section class="w-full flex justify-center px-0 text-white">
+    <main class="grid grid-cols-auto h-full relative">
+      <section class="w-full flex justify-center px-0 text-white min-h-screen h-full">
         <div class="w-full ">
           <?php the_content(); ?>
         </div>

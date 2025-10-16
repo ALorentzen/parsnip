@@ -230,11 +230,5 @@ add_filter(
   3,
 );
 
-add_action("enqueue_block_editor_assets", function () {
-  $dir = get_theme_file_path();
-  $uri = get_theme_file_uri();
-  $css = $dir . "/dist/theme.css";
-  if (is_readable($css)) {
-    wp_enqueue_style("parsnip-editor-css", $uri . "/dist/theme.css", [], filemtime($css));
-  }
-});
+// Editor styles should be handled in block.json files, not here
+// This was causing the iframe warning

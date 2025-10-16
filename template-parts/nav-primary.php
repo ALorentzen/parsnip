@@ -23,7 +23,7 @@ $items = array_values(
 usort($items, static fn($a, $b) => (int) $a->menu_order <=> (int) $b->menu_order);
 ?>
 
-<nav class="relative w-full flex justify-between items-center text-white px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
+<nav class="absolute z-[6000] w-full flex justify-between items-center text-white px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
   <a href="/" aria-label="Home">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" stroke="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" class="h-12 w-auto text-white" role="img" aria-label="Parsnip">
       <title>Parsnip</title>
@@ -43,13 +43,13 @@ usort($items, static fn($a, $b) => (int) $a->menu_order <=> (int) $b->menu_order
     data-target="#mobile-menu"
     data-class="lg:hidden flex w-12 h-12 z-[2000] items-center justify-center cursor-pointer">
     <!-- Hamburger placeholder until React loads -->
-    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
     </svg>
   </div>
 
   <!-- Desktop -->
-  <ul class="hidden lg:flex gap-12 text-white">
+  <ul class="hidden lg:flex gap-12">
     <?php foreach ($items as $item): ?>
       <li class="group">
         <a class="text-2xl" href="<?= esc_url($item->url) ?>"><?= esc_html($item->title) ?></a>

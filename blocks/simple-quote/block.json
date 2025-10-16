@@ -16,5 +16,6 @@
     "quote": { "type": "string", "source": "html", "selector": "p" },
     "credit": { "type": "string", "source": "html", "selector": "cite" }
   },
-  "editorScript": "parsnip-simple-quote-editor"
+  "editorScript": "parsnip-simple-quote-editor",
+  "editorStyle": "parsnip-editor-style"
 }

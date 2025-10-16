@@ -13,16 +13,13 @@ type EditProps = {
   setAttributes: (attrs: Partial<Attributes>) => void;
 };
 
-const WRAPPER_BASE = "relative w-full overflow-hidden bg-cover bg-center max-h-[100dvh] h-full";
-const CONTENT_BASE = "absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none";
-const HEADLINE_CLASS = "text-6xl md:text-8xl font-extrabold leading-none";
-const TEXT_CLASS = "mt-6 text-xl md:text-2xl font-light";
-
+// GUTENBERG EDITOR (wp-admin) - What you see when editing in WordPress admin
 const Edit = ({ attributes, setAttributes }: EditProps) => {
   const { headline = "", text = "", mediaID = 0, mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps({
-    className: WRAPPER_BASE,
+    className:
+      "relative w-full overflow-hidden bg-cover bg-center max-h-screen h-screen bg-green-500",
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
@@ -37,10 +34,10 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className={CONTENT_BASE}>
+      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-12">
         <wp.blockEditor.RichText
           tagName="h1"
-          className={HEADLINE_CLASS}
+          className="text-6xl md:text-8xl font-extrabold leading-none"
           value={headline}
           onChange={(value: string) => setAttributes({ headline: value })}
           placeholder={wp.i18n.__("Add a powerful headline…", "parsnip")}
@@ -48,7 +45,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
         />
         <wp.blockEditor.RichText
           tagName="p"
-          className={TEXT_CLASS}
+          className="mt-6 text-xl md:text-2xl font-light"
           value={text}
           onChange={(value: string) => setAttributes({ text: value })}
           placeholder={wp.i18n.__("Add supporting copy…", "parsnip")}
@@ -65,7 +62,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
               <button
                 type="button"
                 onClick={open}
-                className=" bg-white/90 text-black px-4 py-2 text-sm font-semibold shadow"
+                className="bg-white/90 text-black px-4 py-2 text-sm font-semibold shadow rounded-md"
               >
                 {mediaURL
                   ? wp.i18n.__("Replace background", "parsnip")
@@ -79,20 +76,29 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   );
 };
 
+// FRONTEND (actual website) - What visitors see on your live site
 const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   const { headline = "", text = "", mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps.save({
-    className: WRAPPER_BASE,
+    className: "relative w-full overflow-hidden bg-cover bg-center max-h-screen h-screen",
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className={CONTENT_BASE}>
-        <wp.blockEditor.RichText.Content tagName="h1" className={HEADLINE_CLASS} value={headline} />
-        <wp.blockEditor.RichText.Content tagName="p" className={TEXT_CLASS} value={text} />
+      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-0">
+        <wp.blockEditor.RichText.Content
+          tagName="h1"
+          className="text-6xl md:text-8xl font-extrabold leading-none"
+          value={headline}
+        />
+        <wp.blockEditor.RichText.Content
+          tagName="p"
+          className="mt-6 text-xl md:text-2xl font-light"
+          value={text}
+        />
       </div>
     </section>
   );
@@ -110,8 +116,8 @@ if (
 
   const settings = {
     ...metadata,
-    edit: Edit,
-    save: Save,
+    edit: Edit, // ← Gutenberg editor component
+    save: Save, // ← Frontend website component
   } as unknown as BlockConfiguration<Attributes>;
 
   wp.blocks.registerBlockType(blockName, settings);

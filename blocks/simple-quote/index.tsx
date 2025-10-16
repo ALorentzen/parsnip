@@ -1,12 +1,6 @@
 (() => {
   // Only register blocks in the editor/admin context
-  if (
-    typeof wp === "undefined" ||
-    !wp.blocks ||
-    !wp.blockEditor ||
-    typeof window === "undefined" ||
-    !window.location.href.includes("wp-admin")
-  ) {
+  if (typeof wp === "undefined" || !wp.blocks || !wp.blockEditor || typeof window === "undefined") {
     return;
   }
 
@@ -30,11 +24,13 @@
     },
     editorScript: "parsnip-simple-quote-editor",
   };
+
+  // GUTENBERG EDITOR (wp-admin) - What you see when editing in WordPress admin
   const Edit = ({ attributes, setAttributes }: any) => {
     const { quote = "", credit = "" } = attributes;
 
     const blockProps = wp.blockEditor.useBlockProps({
-      className: "parsnip-simple-quote p-4 border-l-4 border-gray-500",
+      className: "p-4 border-l-4 border-dashed border-slate-300 bg-slate-50/50 rounded-r-md",
     });
 
     return (
@@ -54,18 +50,23 @@
       </div>
     );
   };
-
+  // FRONTEND (actual website) - What visitors see on your live site
   const Save = ({ attributes }: any) => {
     const { quote = "", credit = "" } = attributes;
 
     const blockProps = wp.blockEditor.useBlockProps.save({
-      className: "parsnip-simple-quote p-4 border-l-4 border-gray-500",
+      className:
+        "parsnip-simple-quote p-6 border-l-4 border-slate-400 bg-slate-50 rounded-r-lg italic",
     });
 
     return (
       <div {...blockProps}>
         <wp.blockEditor.RichText.Content tagName="p" value={quote} />
-        <wp.blockEditor.RichText.Content tagName="cite" value={credit} />
+        <wp.blockEditor.RichText.Content
+          tagName="cite"
+          className="text-sm opacity-70 not-italic"
+          value={credit}
+        />
       </div>
     );
   };
