@@ -1,5 +1,42 @@
 <?php
 
+// Disable WordPress autosave functionality completely
+add_action("wp_print_scripts", function () {
+  wp_deregister_script("autosave");
+});
+
+add_action("admin_init", function () {
+  wp_deregister_script("autosave");
+});
+
+add_action("admin_print_scripts", function () {
+  wp_deregister_script("autosave");
+});
+
+add_action("admin_enqueue_scripts", function () {
+  wp_deregister_script("autosave");
+});
+
+// Disable autosave via JavaScript
+add_action("admin_footer", function () {
+  echo '<script type="text/javascript">
+    jQuery(document).ready(function($) {
+      // Disable autosave
+      if (typeof wp !== "undefined" && wp.autosave) {
+        wp.autosave.server.suspend();
+      }
+      // Remove autosave intervals
+      if (typeof autosaveL10n !== "undefined") {
+        autosaveL10n.autosaveInterval = 0;
+      }
+      // Clear any existing autosave timers
+      if (typeof window.autosaveDelayPreview !== "undefined") {
+        clearTimeout(window.autosaveDelayPreview);
+      }
+    });
+  </script>';
+});
+
 // Theme bootstrap: supports, menus, and shared includes.
 add_action("after_setup_theme", function (): void {
   add_theme_support("title-tag");
@@ -62,7 +99,7 @@ function parsnip_get_vite_env(): array
   $dev_protocol = strtolower(getenv("VITE_DEV_PROTOCOL") ?: $site_scheme);
   $dev_protocol = $dev_protocol === "http" ? "http" : "https";
 
-  $dev_host = getenv("VITE_DEV_HOST") ?: $site_host;
+  $dev_host = getenv("VITE_DEV_HOST") ?: "parsnip.test";
   $dev_port = (int) (getenv("VITE_DEV_PORT") ?: 5173);
 
   $default_port = $dev_protocol === "https" ? 443 : 80;
@@ -78,6 +115,11 @@ function parsnip_get_vite_env(): array
       break;
     }
   }
+
+  // Debug logging
+  error_log(
+    "VITE DEV SERVER CHECK: host={$dev_host}, port={$dev_port}, is_up=" . ($is_up ? "YES" : "NO"),
+  );
 
   $env = [
     "protocol" => $dev_protocol,

@@ -9,13 +9,10 @@
       "defaultPalette": false,
       "custom": false,
       "palette": [
-        { "name": "Off White",                "slug": "primary",   "color": "#FEFEFE" },
-        { "name": "Warm Gray",                "slug": "secondary", "color": "#A1A1AA" },
-        { "name": "Muted Blue",               "slug": "accent",    "color": "#8B93A6" },
-        { "name": "Soft Charcoal",            "slug": "ink",       "color": "#52525B" },
-        { "name": "Ghost White",              "slug": "snow",      "color": "#FAFAFA" },
-        { "name": "Deep Gray",                "slug": "dark",      "color": "#3F3F46" },
-        { "name": "Light Muted",              "slug": "muted",     "color": "#D4D4D8" }
+        { "name": "Off White", "slug": "primary", "color": "#FFFFFF" },
+        { "name": "Blue Tint White", "slug": "secondary", "color": "#eff5fc" },
+        { "name": "Black", "slug": "ink", "color": "#000000" },
+        { "name": "Accent", "slug": "accent", "color": "#00fb9b" }
       ]
     },
     "typography": {
