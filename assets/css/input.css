@@ -10,18 +10,44 @@
 
 @layer base {
   body {
-    @apply bg-neutral-800;
+    @apply bg-zinc-50 text-zinc-600;
   }
 }
 
 :root {
-  --color-primary: #f7f3e9;
-  --color-secondary: #2e6f4e;
-  --color-accent: #e9892a;
-  --color-text: #0f172a;
-  --color-text-inverse: #ffffff;
+  --color-primary: #fefefe;
+  --color-secondary: #a1a1aa;
+  --color-accent: #8b93a6;
+  --color-text: #52525b;
+  --color-text-inverse: #fafafa;
+  --color-dark: #3f3f46;
+  --color-muted: #d4d4d8;
 }
 
-a {
-  @apply no-underline decoration-0 text-white;
+nav ul li a {
+  @apply no-underline decoration-0 text-white text-xl;
+}
+
+/* WordPress grid blocks - single column on mobile */
+.wp-block-group.is-layout-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+/* Override WordPress default grid styles for all child elements */
+.wp-block-group.is-layout-grid > * {
+  @apply w-full col-span-1;
+  grid-column-start: auto !important;
+  grid-column-end: auto !important;
+  grid-row-start: auto !important;
+  grid-row-end: auto !important;
+}
+
+/* Ensure all WordPress blocks within grid respect the responsive layout */
+.wp-block-group.is-layout-grid .wp-block-heading,
+.wp-block-group.is-layout-grid .wp-block-paragraph,
+.wp-block-group.is-layout-grid .wp-block-image,
+.wp-block-group.is-layout-grid .wp-block-group,
+.wp-block-group.is-layout-grid [class*="wp-block-"] {
+  @apply w-full;
+  grid-column: span 1 !important;
 }

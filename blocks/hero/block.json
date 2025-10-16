@@ -19,5 +19,6 @@
     "mediaID": { "type": "number", "default": 0 },
     "mediaURL": { "type": "string", "default": "" }
   },
-  "editorScript": "parsnip-hero-editor"
+  "editorScript": "parsnip-hero-editor",
+  "editorStyle": "parsnip-editor-style"
 }

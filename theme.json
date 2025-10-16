@@ -9,11 +9,13 @@
       "defaultPalette": false,
       "custom": false,
       "palette": [
-        { "name": "Parsnip Cream (Primary)",  "slug": "primary",   "color": "#F7F3E9" },
-        { "name": "Leaf Green (Secondary)",   "slug": "secondary", "color": "#2E6F4E" },
-        { "name": "Harvest Orange (Accent)",  "slug": "accent",    "color": "#E9892A" },
-        { "name": "Ink (Text)",               "slug": "ink",       "color": "#0F172A" },
-        { "name": "Snow (Text Inverse)",      "slug": "snow",      "color": "#FFFFFF" }
+        { "name": "Off White",                "slug": "primary",   "color": "#FEFEFE" },
+        { "name": "Warm Gray",                "slug": "secondary", "color": "#A1A1AA" },
+        { "name": "Muted Blue",               "slug": "accent",    "color": "#8B93A6" },
+        { "name": "Soft Charcoal",            "slug": "ink",       "color": "#52525B" },
+        { "name": "Ghost White",              "slug": "snow",      "color": "#FAFAFA" },
+        { "name": "Deep Gray",                "slug": "dark",      "color": "#3F3F46" },
+        { "name": "Light Muted",              "slug": "muted",     "color": "#D4D4D8" }
       ]
     },
     "typography": {
