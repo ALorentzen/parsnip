@@ -61,14 +61,18 @@ add_action("admin_head", function () {
   </style>';
 });
 
-// Disable autosave via JavaScript - more comprehensive
+// Disable autosave via JavaScript - fixed version
 add_action("admin_footer", function () {
   echo '<script type="text/javascript">
     jQuery(document).ready(function($) {
-      // Disable autosave completely
+      // Disable autosave completely (with proper checks)
       if (typeof wp !== "undefined" && wp.autosave) {
-        wp.autosave.server.suspend();
-        wp.autosave.local.suspend();
+        if (wp.autosave.server && typeof wp.autosave.server.suspend === "function") {
+          wp.autosave.server.suspend();
+        }
+        if (wp.autosave.local && typeof wp.autosave.local.suspend === "function") {
+          wp.autosave.local.suspend();
+        }
       }
       
       // Remove autosave intervals
@@ -91,9 +95,9 @@ add_action("admin_footer", function () {
         });
       }, 100);
       
-      // Disable heartbeat entirely
-      if (typeof wp !== "undefined" && wp.heartbeat) {
-        wp.heartbeat.suspend();
+      // Disable heartbeat properly (if it exists)
+      if (typeof wp !== "undefined" && wp.heartbeat && typeof wp.heartbeat.stop === "function") {
+        wp.heartbeat.stop();
       }
     });
   </script>';
