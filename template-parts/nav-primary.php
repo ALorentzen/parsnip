@@ -23,7 +23,7 @@ $items = array_values(
 usort($items, static fn($a, $b) => (int) $a->menu_order <=> (int) $b->menu_order);
 ?>
 
-<nav class="absolute z-[6000] w-full flex justify-between items-center text-white px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl">
+<nav class="absolute z-[6000] w-full flex justify-between items-center text-white px-4 lg:px-8 bg-neutral-900/80 backdrop-blur-2xl mt-0">
   <a href="/" aria-label="Home">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" stroke="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" class="h-12 w-auto text-white" role="img" aria-label="Parsnip">
       <title>Parsnip</title>

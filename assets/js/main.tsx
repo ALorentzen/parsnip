@@ -47,6 +47,39 @@ function initHamburger() {
   });
 }
 
+// Import scroll handler
+import "../js/scroll.js";
+
+// Initialize scroll effect
+function initScroll() {
+  // Check if we're in WordPress admin/editor
+  if (
+    document.body.classList.contains("wp-admin") ||
+    document.body.classList.contains("block-editor-page") ||
+    document.querySelector(".edit-post-layout") ||
+    document.querySelector(".block-editor")
+  ) {
+    // We're in editor - clean up any existing scroll effects
+    const cleanupEditorBlocks = (window as any).cleanupEditorBlocks;
+    if (typeof cleanupEditorBlocks === "function") {
+      cleanupEditorBlocks();
+    }
+    return; // Don't init scroll effects in editor
+  }
+
+  // Get the scroll effect initializer from the scroll module (frontend only)
+  const initScrollEffect = (window as any).initScrollEffect;
+  if (typeof initScrollEffect === "function") {
+    initScrollEffect();
+  }
+}
+
 document.readyState === "loading"
-  ? document.addEventListener("DOMContentLoaded", initHamburger)
-  : initHamburger();
+  ? document.addEventListener("DOMContentLoaded", () => {
+      initHamburger();
+      initScroll();
+    })
+  : (() => {
+      initHamburger();
+      initScroll();
+    })();

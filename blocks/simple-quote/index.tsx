@@ -179,7 +179,7 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   };
 
   const blockProps = wp.blockEditor.useBlockProps.save({
-    className: `parsnip-simple-quote p-6 rounded-lg italic shadow-lg ${getWidthClass(width)} ${getPlacementClass(placement)}`,
+    className: `parsnip-simple-quote p-6 rounded-lg italic shadow-lg bg-white/90 backdrop-blur-sm ${getWidthClass(width)} ${getPlacementClass(placement)}`,
   });
 
   return (
