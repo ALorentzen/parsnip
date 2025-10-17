@@ -40,8 +40,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   const { headline = "", text = "", mediaID = 0, mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps({
-    className:
-      "relative w-full overflow-hidden bg-cover bg-center max-h-screen h-screen bg-green-500",
+    className: "relative w-full overflow-hidden bg-cover bg-center h-96 bg-green-500 my-12", // h-96 = 384px for editor
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
@@ -56,10 +55,10 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none">
+      <div className="absolute bottom-0 -translate-y-12 z-10 p-8 text-white max-w-4xl">
         <wp.blockEditor.RichText
           tagName="h1"
-          className="text-6xl md:text-8xl font-extrabold leading-none"
+          className="text-7xl font-bold leading-tight mb-4"
           value={headline}
           onChange={(value: string) => setAttributes({ headline: value })}
           placeholder={wp.i18n.__("Add a powerful headline…", "parsnip")}
@@ -67,7 +66,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
         />
         <wp.blockEditor.RichText
           tagName="p"
-          className="mt-6 text-xl md:text-2xl font-light"
+          className="text-lg font-light"
           value={text}
           onChange={(value: string) => setAttributes({ text: value })}
           placeholder={wp.i18n.__("Add supporting copy…", "parsnip")}
@@ -110,7 +109,7 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   return (
     <section {...wrapperProps}>
       <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-x-0 bottom-12 p-8 text-white max-w-4xl pointer-events-none">
+      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-12">
         <wp.blockEditor.RichText.Content
           tagName="h1"
           className="text-6xl md:text-8xl font-extrabold leading-none"

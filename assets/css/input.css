@@ -9,6 +9,9 @@
 } /* Chrome/Safari */
 
 @layer base {
+  html {
+    @apply scroll-smooth;
+  }
   body {
     @apply bg-zinc-50 text-zinc-600;
   }
@@ -28,13 +31,13 @@ nav ul li a {
   @apply no-underline decoration-0 text-white text-xl;
 }
 
-/* WordPress grid blocks - single column on mobile */
-.wp-block-group.is-layout-grid {
+/* WordPress grid blocks - single column on mobile (frontend only) */
+body:not(.wp-admin) .wp-block-group.is-layout-grid {
   @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
 }
 
-/* Override WordPress default grid styles for all child elements */
-.wp-block-group.is-layout-grid > * {
+/* Override WordPress default grid styles for all child elements (frontend only) */
+body:not(.wp-admin) .wp-block-group.is-layout-grid > * {
   @apply w-full col-span-1;
   grid-column-start: auto !important;
   grid-column-end: auto !important;
@@ -42,12 +45,121 @@ nav ul li a {
   grid-row-end: auto !important;
 }
 
-/* Ensure all WordPress blocks within grid respect the responsive layout */
-.wp-block-group.is-layout-grid .wp-block-heading,
-.wp-block-group.is-layout-grid .wp-block-paragraph,
-.wp-block-group.is-layout-grid .wp-block-image,
-.wp-block-group.is-layout-grid .wp-block-group,
-.wp-block-group.is-layout-grid [class*="wp-block-"] {
+/* Ensure all WordPress blocks within grid respect the responsive layout (frontend only) */
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-heading,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-paragraph,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-image,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-group,
+body:not(.wp-admin) .wp-block-group.is-layout-grid [class*="wp-block-"] {
   @apply w-full;
   grid-column: span 1 !important;
+}
+
+body:not(.wp-admin) .wp-block-spacer {
+  position: absolute;
+  display: hidden !important;
+}
+
+/* WordPress Editor Fixes - ensure proper layout in admin */
+.wp-admin .interface-interface-skeleton__sidebar,
+.wp-admin .edit-post-sidebar,
+.wp-admin .block-editor-block-inspector,
+.wp-admin .components-panel {
+  overflow-x: visible !important;
+  max-width: none !important;
+}
+
+/* Ensure ALL blocks in editor respect content width boundaries */
+.wp-admin .block-editor-block-list__layout .wp-block,
+.wp-admin .block-editor-block-list__block {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Specifically fix image blocks and their content */
+.wp-admin .wp-block-image,
+.wp-admin .wp-block-image img,
+.wp-admin .wp-block-image figure,
+.wp-admin .wp-block-image .wp-block-image__figcaption {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure editor content area doesn't allow overflow */
+.wp-admin .block-editor-writing-flow,
+.wp-admin .block-editor-block-list__layout {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* ONLY target our custom blocks for specific fixes */
+.wp-admin .wp-block-parsnip-simple-quote,
+.wp-admin .wp-block-parsnip-hero {
+  max-width: 100% !important;
+  width: auto !important;
+  position: static !important;
+  transform: none !important;
+}
+
+/* Specific fixes for our custom blocks only */
+.wp-admin .wp-block-parsnip-simple-quote.max-w-2xl,
+.wp-admin .wp-block-parsnip-simple-quote.w-fit,
+.wp-admin .wp-block-parsnip-simple-quote.ml-auto,
+.wp-admin .wp-block-parsnip-simple-quote.mr-auto,
+.wp-admin .wp-block-parsnip-simple-quote.mx-auto {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Only fix form elements in OUR block inspector panels */
+.wp-admin .wp-block-parsnip-simple-quote .block-editor-block-inspector select,
+.wp-admin .wp-block-parsnip-simple-quote .block-editor-block-inspector input,
+.wp-admin .wp-block-parsnip-simple-quote .components-panel select,
+.wp-admin .wp-block-parsnip-simple-quote .components-panel input,
+.wp-admin .wp-block-parsnip-hero .block-editor-block-inspector select,
+.wp-admin .wp-block-parsnip-hero .block-editor-block-inspector input,
+.wp-admin .wp-block-parsnip-hero .components-panel select,
+.wp-admin .wp-block-parsnip-hero .components-panel input {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Only target labels in our custom blocks */
+.wp-admin .wp-block-parsnip-simple-quote .components-panel__body label,
+.wp-admin .wp-block-parsnip-simple-quote .components-panel__body select,
+.wp-admin .wp-block-parsnip-simple-quote .components-panel__body input,
+.wp-admin .wp-block-parsnip-hero .components-panel__body label,
+.wp-admin .wp-block-parsnip-hero .components-panel__body select,
+.wp-admin .wp-block-parsnip-hero .components-panel__body input {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.wp-admin .wp-block-parsnip-simple-quote,
+.wp-admin .wp-block-parsnip-hero {
+  max-width: 100% !important;
+  width: auto !important;
+  position: static !important;
+  transform: none !important;
+}
+
+.is-root-container {
+  overflow-x: hidden !important;
+}
+
+.interface-complementary-area {
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: none !important;
+}
+
+.edit-post:block {
+  overflow-x: hidden !important;
 }

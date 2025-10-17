@@ -15,23 +15,85 @@ add_action("admin_print_scripts", function () {
 
 add_action("admin_enqueue_scripts", function () {
   wp_deregister_script("autosave");
+
+  // Temporarily disable editor styles to test if they're causing the issue
+  // $css_path = get_template_directory() . "/dist/theme.css";
+  // if (file_exists($css_path)) {
+  //   wp_enqueue_style("parsnip-editor-css", get_template_directory_uri() . "/dist/theme.css", [], filemtime($css_path));
+  // }
 });
 
-// Disable autosave via JavaScript
+// More aggressive autosave disabling
+add_action("wp_print_scripts", function () {
+  wp_deregister_script("autosave");
+});
+
+// Remove autosave entirely
+remove_action("wp_ajax_heartbeat", "wp_ajax_heartbeat", 1);
+
+// Disable autosave notifications via CSS and fix editor overflow
+add_action("admin_head", function () {
+  echo '<style>
+    /* Hide autosave notifications */
+    .components-notice-list .components-notice:has([data-id*="autosave"]),
+    .components-notice-list .components-notice:has([href*="autosave"]),
+    .components-notice[aria-label*="autosave"],
+    .components-notice:has(.components-notice__content[href*="autosave"]),
+    .editor-post-save-draft,
+    .components-notice:has(a[href*="revision"]) {
+      display: none !important;
+    }
+    
+    /* Fix editor horizontal scroll - simple and direct */
+    .block-editor-writing-flow {
+      overflow-x: hidden !important;
+    }
+    
+    .wp-block {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    .wp-block-image img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  </style>';
+});
+
+// Disable autosave via JavaScript - more comprehensive
 add_action("admin_footer", function () {
   echo '<script type="text/javascript">
     jQuery(document).ready(function($) {
-      // Disable autosave
+      // Disable autosave completely
       if (typeof wp !== "undefined" && wp.autosave) {
         wp.autosave.server.suspend();
+        wp.autosave.local.suspend();
       }
+      
       // Remove autosave intervals
       if (typeof autosaveL10n !== "undefined") {
         autosaveL10n.autosaveInterval = 0;
       }
+      
       // Clear any existing autosave timers
       if (typeof window.autosaveDelayPreview !== "undefined") {
         clearTimeout(window.autosaveDelayPreview);
+      }
+      
+      // Hide autosave notices continuously
+      setInterval(function() {
+        $(".components-notice").each(function() {
+          var noticeText = $(this).text().toLowerCase();
+          if (noticeText.includes("autosave") || noticeText.includes("more recent") || $(this).find("a[href*=\"autosave\"]").length) {
+            $(this).hide();
+          }
+        });
+      }, 100);
+      
+      // Disable heartbeat entirely
+      if (typeof wp !== "undefined" && wp.heartbeat) {
+        wp.heartbeat.suspend();
       }
     });
   </script>';
@@ -271,6 +333,8 @@ add_filter(
   10,
   3,
 );
+require_once get_theme_file_path("inc/filters.php");
+add_filter("the_content", "gutenberg_order_filter");
 
 // Editor styles should be handled in block.json files, not here
 // This was causing the iframe warning
