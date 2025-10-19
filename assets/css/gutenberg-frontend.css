@@ -1,0 +1,165 @@
+/* ============================================
+   GUTENBERG FRONTEND STYLES (Public Site)
+   ============================================ */
+
+/* ============================================
+   SIMPLE GRID LAYOUT
+   ============================================ */
+
+/* WordPress grid blocks - simple responsive grid */
+body:not(.wp-admin) .wp-block-group.is-layout-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  gap: 1rem !important;
+  width: 100% !important;
+}
+
+/* Reset WordPress default grid styles */
+body:not(.wp-admin) .wp-block-group.is-layout-grid > * {
+  width: 100% !important;
+  grid-column: span 1 !important;
+  grid-row: span 1 !important;
+}
+
+/* Make images look good */
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-image img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+  border-radius: 0.5rem;
+}
+
+/* Ensure all blocks respect the grid */
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-heading,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-paragraph,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-image,
+body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-group,
+body:not(.wp-admin) .wp-block-group.is-layout-grid [class*="wp-block-"] {
+  @apply w-full;
+}
+
+/* Hide spacer blocks on frontend */
+body:not(.wp-admin) .wp-block-spacer {
+  position: absolute;
+  display: hidden !important;
+}
+
+/* ============================================
+   VIDEO BLOCK STYLES
+   ============================================ */
+
+body:not(.wp-admin) .wp-block-video {
+  pointer-events: auto !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important; /* Needed for ::before positioning */
+  height: 384px !important;
+}
+
+/* Make sure the inner div also has relative positioning */
+body:not(.wp-admin) .wp-block-video > div {
+  position: relative !important;
+}
+
+body:not(.wp-admin) .wp-block-video video {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 960px !important;
+  max-height: 500px !important;
+  object-fit: cover !important;
+  object-position: 0 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 auto !important;
+}
+
+/* Hide default video controls */
+body:not(.wp-admin) .wp-block-video video::-webkit-media-controls {
+  display: none !important;
+}
+
+body:not(.wp-admin) .wp-block-video video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+/* Play button overlay on video blocks */
+body:not(.wp-admin) .wp-block-video > div::before {
+  content: "";
+  background-image: url("../../public/images/play.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+  z-index: 999 !important;
+}
+
+/* ============================================
+   GALLERY BLOCK - User-controlled column spans
+   Max 3 columns per row
+   ============================================ */
+
+body:not(.wp-admin) .wp-block-gallery {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important; /* Fixed 3 column grid */
+  grid-auto-rows: 250px !important;
+  grid-auto-flow: dense !important;
+  gap: 1rem !important;
+}
+
+/* Column span classes - user controlled */
+body:not(.wp-admin) .wp-block-gallery .col-span-1 {
+  grid-column: span 1 !important;
+}
+
+body:not(.wp-admin) .wp-block-gallery .col-span-2 {
+  grid-column: span 2 !important;
+}
+
+body:not(.wp-admin) .wp-block-gallery .col-span-3 {
+  grid-column: span 3 !important; /* Takes full row */
+}
+
+/* Make gallery images fill their cells */
+body:not(.wp-admin) .wp-block-gallery img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 0.5rem !important;
+  display: block !important;
+}
+
+body:not(.wp-admin) .wp-block-gallery figure {
+  overflow: hidden !important;
+  margin: 0 !important;
+}
+
+/* Responsive: 2 columns on tablet */
+@media (max-width: 1023px) and (min-width: 768px) {
+  body:not(.wp-admin) .wp-block-gallery {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  body:not(.wp-admin) .wp-block-gallery .col-span-3 {
+    grid-column: span 2 !important; /* Max 2 on tablet */
+  }
+}
+
+/* Responsive: 1 column on mobile */
+@media (max-width: 767px) {
+  body:not(.wp-admin) .wp-block-gallery {
+    grid-template-columns: 1fr !important;
+  }
+
+  body:not(.wp-admin) .wp-block-gallery .col-span-2,
+  body:not(.wp-admin) .wp-block-gallery .col-span-3 {
+    grid-column: span 1 !important; /* Single column on mobile */
+  }
+}

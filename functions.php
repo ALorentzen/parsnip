@@ -15,12 +15,6 @@ add_action("admin_print_scripts", function () {
 
 add_action("admin_enqueue_scripts", function () {
   wp_deregister_script("autosave");
-
-  // Temporarily disable editor styles to test if they're causing the issue
-  // $css_path = get_template_directory() . "/dist/theme.css";
-  // if (file_exists($css_path)) {
-  //   wp_enqueue_style("parsnip-editor-css", get_template_directory_uri() . "/dist/theme.css", [], filemtime($css_path));
-  // }
 });
 
 // More aggressive autosave disabling
@@ -223,6 +217,38 @@ function parsnip_get_vite_manifest(): array
 
 require_once get_theme_file_path("inc/blocks.php");
 
+// Load gallery controls in block editor
+add_action("enqueue_block_editor_assets", function () {
+  $paths = parsnip_get_theme_paths();
+  $vite = parsnip_get_vite_env();
+
+  if ($vite["is_up"]) {
+    // Dev mode - load from Vite dev server
+    $entry_src = esc_url_raw($vite["origin"] . $vite["theme_path"] . "/assets/js/editor.tsx");
+    wp_enqueue_script(
+      "parsnip-editor",
+      $entry_src,
+      ["wp-element", "wp-blocks", "wp-hooks", "wp-compose", "wp-block-editor", "wp-components"],
+      null,
+      true,
+    );
+    wp_script_add_data("parsnip-editor", "type", "module");
+  } else {
+    // Production - load from built files
+    $plain = $paths["dir"] . "/dist/assets/editor.js";
+    if (is_readable($plain)) {
+      wp_enqueue_script(
+        "parsnip-editor",
+        $paths["uri"] . "/dist/assets/editor.js",
+        ["wp-element", "wp-blocks", "wp-hooks", "wp-compose", "wp-block-editor", "wp-components"],
+        filemtime($plain),
+        true,
+      );
+      wp_script_add_data("parsnip-editor", "type", "module");
+    }
+  }
+});
+
 // Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
 add_action("wp_enqueue_scripts", function () {
   if (is_admin()) {
@@ -329,7 +355,7 @@ add_action("wp_enqueue_scripts", function () {
 add_filter(
   "script_loader_tag",
   function ($tag, $handle, $src) {
-    if (in_array($handle, ["parsnip"], true) && strpos($tag, "type=") === false) {
+    if (in_array($handle, ["parsnip", "parsnip-editor"], true) && strpos($tag, "type=") === false) {
       $tag = str_replace("<script ", '<script type="module" ', $tag);
     }
     return $tag;
@@ -339,6 +365,3 @@ add_filter(
 );
 require_once get_theme_file_path("inc/filters.php");
 add_filter("the_content", "gutenberg_order_filter");
-
-// Editor styles should be handled in block.json files, not here
-// This was causing the iframe warning
