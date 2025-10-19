@@ -19,9 +19,17 @@ function discoverBlocks(rootDir: string = process.cwd()) {
     if (!dirEntry.isDirectory()) continue;
     const name = dirEntry.name;
     const dir = path.join(blocksDir, name);
-    const entry = ["index.tsx", "index.ts", "index.js"]
-      .map((entryFileName) => path.join(dir, entryFileName))
-      .find(fs.existsSync);
+
+    // Look for entry files: named files first, then fallback to index.*
+    const entry = [
+      path.join(dir, `${name}.tsx`),
+      path.join(dir, `${name}.ts`),
+      path.join(dir, `${name}.js`),
+      path.join(dir, "index.tsx"),
+      path.join(dir, "index.ts"),
+      path.join(dir, "index.js"),
+    ].find(fs.existsSync);
+
     if (!entry) continue;
     entries[name] = entry;
 
@@ -105,16 +113,34 @@ export default defineConfig({
     manifest: true,
     minify: false,
     rollupOptions: {
-      input: { theme: "assets/js/main.tsx", ...entries },
+      input: {
+        theme: "assets/js/main.tsx",
+        editor: "assets/js/editor.tsx",
+        ...entries,
+      },
+      external: [/^@wordpress\//],
       output: {
         entryFileNames: (chunkInfo: ChunkInfo) =>
-          entries[chunkInfo.name] ? `blocks/${chunkInfo.name}/index.js` : "assets/main.js",
+          entries[chunkInfo.name]
+            ? `blocks/${chunkInfo.name}/index.js`
+            : chunkInfo.name === "editor"
+              ? "assets/editor.js"
+              : "assets/main.js",
         assetFileNames: (assetInfo: AssetInfo) =>
           entries[assetInfo.name ?? ""]
             ? `blocks/${assetInfo.name}/[name][extname]`
             : "assets/[name][extname]",
         intro: (chunk) => (entries[chunk.name] ? "(function() {" : ""),
         outro: (chunk) => (entries[chunk.name] ? "})();" : ""),
+        globals: {
+          "@wordpress/blocks": "wp.blocks",
+          "@wordpress/hooks": "wp.hooks",
+          "@wordpress/compose": "wp.compose",
+          "@wordpress/block-editor": "wp.blockEditor",
+          "@wordpress/components": "wp.components",
+          "@wordpress/i18n": "wp.i18n",
+          "@wordpress/element": "wp.element",
+        },
       },
     },
   },

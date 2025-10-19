@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "./gutenberg-editor.css";
+@import "./gutenberg-frontend.css";
+
+/* ============================================
+   CUSTOM THEME STYLES
+   ============================================ */
 
 .no-scrollbar {
   -ms-overflow-style: none; /* IE/Edge */
@@ -29,77 +35,4 @@
 
 nav ul li a {
   @apply no-underline decoration-0 text-white text-xl;
-}
-
-/* WordPress grid blocks - single column on mobile (frontend only) */
-body:not(.wp-admin) .wp-block-group.is-layout-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
-}
-
-/* Override WordPress default grid styles for all child elements (frontend only) */
-body:not(.wp-admin) .wp-block-group.is-layout-grid > * {
-  @apply w-full col-span-1;
-  grid-column-start: auto !important;
-  grid-column-end: auto !important;
-  grid-row-start: auto !important;
-  grid-row-end: auto !important;
-}
-
-/* Ensure all WordPress blocks within grid respect the responsive layout (frontend only) */
-body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-heading,
-body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-paragraph,
-body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-image,
-body:not(.wp-admin) .wp-block-group.is-layout-grid .wp-block-group,
-body:not(.wp-admin) .wp-block-group.is-layout-grid [class*="wp-block-"] {
-  @apply w-full;
-  grid-column: span 1 !important;
-}
-
-body:not(.wp-admin) .wp-block-spacer {
-  position: absolute;
-  display: hidden !important;
-}
-
-/* WordPress Editor Fixes - ensure proper layout in admin */
-.wp-admin .interface-interface-skeleton__sidebar,
-.wp-admin .edit-post-sidebar,
-.wp-admin .block-editor-block-inspector,
-.wp-admin .components-panel {
-  overflow-x: visible !important;
-  max-width: none !important;
-}
-
-/* ONLY target our custom blocks for specific fixes */
-.wp-admin .wp-block-parsnip-simple-quote,
-.wp-admin .wp-block-parsnip-hero {
-  max-width: 100% !important;
-  width: auto !important;
-  position: static !important;
-  transform: none !important;
-}
-
-/* Specific fixes for simple-quote block layout */
-.wp-admin .wp-block-parsnip-simple-quote.max-w-2xl,
-.wp-admin .wp-block-parsnip-simple-quote.w-fit,
-.wp-admin .wp-block-parsnip-simple-quote.ml-auto,
-.wp-admin .wp-block-parsnip-simple-quote.mr-auto,
-.wp-admin .wp-block-parsnip-simple-quote.mx-auto {
-  max-width: 100% !important;
-  width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* Fix horizontal scroll in editor panels - your working solution */
-.interface-complementary-area {
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: none !important;
-}
-
-.edit-post:block {
-  overflow-x: hidden !important;
-}
-
-.block-editor-block-list__layout .block-editor-block-list__block {
-  overflow-x: hidden !important;
 }

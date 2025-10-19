@@ -40,7 +40,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
   const { headline = "", text = "", mediaID = 0, mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps({
-    className: "relative w-full overflow-hidden bg-cover bg-center h-96 bg-green-500 my-12", // h-96 = 384px for editor
+    className: "relative w-full overflow-hidden bg-cover bg-center h-96 bg-green-500 my-12",
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
