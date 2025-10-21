@@ -118,7 +118,7 @@ export default defineConfig({
         editor: "assets/js/editor.tsx",
         ...entries,
       },
-      external: [/^@wordpress\//],
+      external: [/^@wordpress\/*/],
       output: {
         entryFileNames: (chunkInfo: ChunkInfo) =>
           entries[chunkInfo.name]
