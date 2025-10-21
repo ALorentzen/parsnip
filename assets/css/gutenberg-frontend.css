@@ -102,35 +102,43 @@ body:not(.wp-admin) .wp-block-video > div::before {
 }
 
 /* ============================================
-   GALLERY BLOCK - User-controlled column spans
-   Max 3 columns per row
+   GALLERY BLOCK - Flex Layout with Tailwind Width Classes
    ============================================ */
 
 body:not(.wp-admin) .wp-block-gallery {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important; /* Fixed 3 column grid */
-  grid-auto-rows: 250px !important;
-  grid-auto-flow: dense !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
   gap: 1rem !important;
+  align-items: flex-start !important;
 }
 
-/* Column span classes - user controlled */
-body:not(.wp-admin) .wp-block-gallery .col-span-1 {
-  grid-column: span 1 !important;
+body:not(.wp-admin) .wp-block-gallery .wp-block-image {
+  margin: 0 !important;
+  flex-shrink: 0 !important;
 }
 
-body:not(.wp-admin) .wp-block-gallery .col-span-2 {
-  grid-column: span 2 !important;
+/* Tailwind width classes for gallery images */
+body:not(.wp-admin) .wp-block-gallery .wp-block-image.w-1\/4,
+body:not(.wp-admin) .wp-block-gallery .w-1\/4 {
+  width: calc(25% - 0.75rem) !important; /* 25% minus gap */
+  height: 396px !important; /* Fixed height for consistency */
 }
 
-body:not(.wp-admin) .wp-block-gallery .col-span-3 {
-  grid-column: span 3 !important; /* Takes full row */
+body:not(.wp-admin) .wp-block-gallery .wp-block-image.w-1\/2,
+body:not(.wp-admin) .wp-block-gallery .w-1\/2 {
+  width: calc(50% - 0.5rem) !important; /* 50% minus gap */
+  height: 396px !important; /* Fixed height for consistency */
 }
 
-/* Make gallery images fill their cells */
+body:not(.wp-admin) .wp-block-gallery .wp-block-image.w-full,
+body:not(.wp-admin) .wp-block-gallery .w-full {
+  width: 100% !important;
+}
+
+/* Make gallery images fill their containers with consistent height */
 body:not(.wp-admin) .wp-block-gallery img {
   width: 100% !important;
-  height: 100% !important;
+  height: 396px !important; /* Fixed height for consistency */
   object-fit: cover !important;
   border-radius: 0.5rem !important;
   display: block !important;
@@ -141,25 +149,12 @@ body:not(.wp-admin) .wp-block-gallery figure {
   margin: 0 !important;
 }
 
-/* Responsive: 2 columns on tablet */
-@media (max-width: 1023px) and (min-width: 768px) {
-  body:not(.wp-admin) .wp-block-gallery {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  body:not(.wp-admin) .wp-block-gallery .col-span-3 {
-    grid-column: span 2 !important; /* Max 2 on tablet */
-  }
-}
-
-/* Responsive: 1 column on mobile */
+/* Responsive: Single column on mobile */
 @media (max-width: 767px) {
-  body:not(.wp-admin) .wp-block-gallery {
-    grid-template-columns: 1fr !important;
-  }
-
-  body:not(.wp-admin) .wp-block-gallery .col-span-2,
-  body:not(.wp-admin) .wp-block-gallery .col-span-3 {
-    grid-column: span 1 !important; /* Single column on mobile */
+  body:not(.wp-admin) .wp-block-gallery .wp-block-image.w-1\/4,
+  body:not(.wp-admin) .wp-block-gallery .wp-block-image.w-1\/2,
+  body:not(.wp-admin) .wp-block-gallery .w-1\/4,
+  body:not(.wp-admin) .wp-block-gallery .w-1\/2 {
+    width: 100% !important; /* Full width on mobile */
   }
 }
