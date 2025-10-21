@@ -4,3 +4,4 @@ vendor
 .env
 *.log
 dist/
+COPILOT_INSTRUCTIONS.md
