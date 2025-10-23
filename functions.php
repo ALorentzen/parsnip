@@ -114,12 +114,12 @@ add_action("after_setup_theme", function (): void {
     "primary" => __("Primary Menu", "parsnip"),
   ]);
 
-  $inc_dir = get_template_directory() . "/inc";
-  if (!is_dir($inc_dir)) {
-    return;
-  }
-  foreach (glob($inc_dir . "/*.php") ?: [] as $file) {
-    require_once $file;
+  // Load well-known includes from the `inc/` directory in a deterministic order.
+  // Use `inc/index.php` as a single entry point to keep the bootstrapping
+  // explicit and human-readable.
+  $inc_index = get_theme_file_path("inc/index.php");
+  if (is_readable($inc_index)) {
+    require_once $inc_index;
   }
 });
 
@@ -215,7 +215,8 @@ function parsnip_get_vite_manifest(): array
   return $manifest;
 }
 
-require_once get_theme_file_path("inc/blocks.php");
+// `inc/index.php` will require the per-feature includes (blocks, filters, etc.)
+// in a deterministic order. See inc/index.php for details.
 
 // Load gallery controls in block editor
 add_action("enqueue_block_editor_assets", function () {
@@ -365,5 +366,4 @@ add_filter(
   10,
   3,
 );
-require_once get_theme_file_path("inc/filters.php");
-add_filter("the_content", "gutenberg_order_filter");
+// filters.php is loaded via inc/index.php; it registers its filters on load.

@@ -78,35 +78,29 @@ add_action("init", function (): void {
       $editor_styles[] = $style_handle;
     }
 
-    // Register quote block as dynamic with PHP render callback (server-side helper
-    // lives in inc/blocks/quote.php and is loaded via inc/index.php earlier).
-    if ($slug === "quote") {
-      // Ensure server-side knows about our custom attributes so they are persisted
-      $quote_attributes = [
-        "reviewer" => ["type" => "string", "default" => ""],
-        "year" => ["type" => "string", "default" => ""],
-        "quote" => ["type" => "string", "default" => ""],
-      ];
-      register_block_type_from_metadata(
-        $source_dir,
-        array_filter([
-          "editor_script" => $handle,
-          "style" => $style_handles["style"] ?? null,
-          "editor_style" => $style_handles["editor_style"] ?? null,
-          "render_callback" => "parsnip_render_quote_block",
-          "attributes" => $quote_attributes,
-        ]),
-      );
-    } else {
-      register_block_type_from_metadata(
-        $source_dir,
-        array_filter([
-          "editor_script" => $handle,
-          "style" => $style_handles["style"] ?? null,
-          "editor_style" => $style_handles["editor_style"] ?? null,
-        ]),
-      );
+    // If a server-side helper exists in inc/blocks/<slug>.php, require it and
+    // register its render callback automatically. This centralizes block
+    // registration so we don't need per-block special cases.
+    $server_helper = $paths["dir"] . "/inc/blocks/{$slug}.php";
+    $render_callback = null;
+    if (is_readable($server_helper)) {
+      require_once $server_helper;
+      $candidate = "parsnip_render_{$slug}_block";
+      if (function_exists($candidate)) {
+        $render_callback = $candidate;
+      }
     }
+
+    $options = array_filter([
+      "editor_script" => $handle,
+      "style" => $style_handles["style"] ?? null,
+      "editor_style" => $style_handles["editor_style"] ?? null,
+    ]);
+    if ($render_callback !== null) {
+      $options["render_callback"] = $render_callback;
+    }
+
+    register_block_type_from_metadata($source_dir, $options);
   }
 
   if ($editor_scripts !== []) {
@@ -123,7 +117,7 @@ add_action("init", function (): void {
       1,
     );
   }
-  // We rely on the render_block interception (inc/render-quote-block.php) to
+  // We rely on the render_block interception (inc/blocks/quote.php) to
   // render core/quote server-side. Avoid re-registering core blocks here to
   // prevent duplicate registration warnings. The theme-specific quote block
   // (if present) is registered above via register_block_type_from_metadata.

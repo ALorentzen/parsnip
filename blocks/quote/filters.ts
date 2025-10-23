@@ -52,35 +52,4 @@ if (window.wp && window.wp.hooks && window.wp.element) {
       return settings;
     },
   );
-
-  // Ensure saved HTML contains our custom fields so frontend will render them
-  window.wp.hooks.addFilter(
-    "blocks.getSaveContent.extraProps",
-    "parsnip/quote-save-extra-fields",
-    (props: any, blockType: any, attributes: any) => {
-      if (!blockType || blockType.name !== "core/quote") return props;
-      let children = props.children || [];
-      if (attributes && attributes.quote) {
-        children = [
-          window.wp.element.createElement("p", { key: "quote" }, attributes.quote),
-          ...children,
-        ];
-      }
-      if (attributes && attributes.reviewer) {
-        children.push(
-          window.wp.element.createElement("footer", { key: "reviewer" }, attributes.reviewer),
-        );
-      }
-      if (attributes && attributes.year) {
-        children.push(
-          window.wp.element.createElement(
-            "div",
-            { key: "year", className: "quote-year" },
-            attributes.year,
-          ),
-        );
-      }
-      return { ...props, children };
-    },
-  );
 }
