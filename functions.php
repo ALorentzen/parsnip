@@ -251,6 +251,8 @@ add_action("enqueue_block_editor_assets", function () {
 
 // Front-end asset loader: prefer Vite dev server, otherwise fall back to built files.
 add_action("wp_enqueue_scripts", function () {
+  wp_enqueue_script("wp-hooks");
+  wp_enqueue_script("parsnip");
   if (is_admin()) {
     return;
   }

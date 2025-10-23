@@ -1,8 +1,8 @@
-// @ts-nocheck
+import React from "react";
 import { createElement, Fragment } from "@wordpress/element";
 import { InspectorControls } from "@wordpress/block-editor";
-import { PanelBody, BaseControl, ButtonGroup, Button } from "@wordpress/components";
-
+import { PanelBody, BaseControl, Button } from "@wordpress/components";
+declare const wp: any;
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
@@ -31,6 +31,7 @@ interface SaveProps {
   className?: string;
   [key: string]: unknown;
 }
+const WPButton = Button as any;
 
 const WIDTH_CLASS_MAP = {
   "25": "w-1/4",
@@ -73,7 +74,8 @@ wp.hooks.addFilter(
     return function (props: BlockProps) {
       // Hide columns control for gallery blocks
       if (props.name === "core/gallery") {
-        return <Button variant="primary">25%</Button>;
+        // Optionally hide columns control here, but do NOT return just a button
+        return wp.element.createElement(BlockEdit, props);
       }
       return wp.element.createElement(BlockEdit, props);
     };
@@ -93,36 +95,42 @@ wp.hooks.addFilter(
 
       const columnSpan = props.attributes.columnSpan || "50";
 
-      const BlockEditComponent = BlockEdit as React.ComponentType<any>;
-
       return (
         <Fragment>
-          <BlockEditComponent {...props} />
+          {wp.element.createElement(BlockEdit, props)}
           <InspectorControls>
-            <PanelBody title="Gallery Layout" initialOpen={true}>
-              <BaseControl label="Image Width" help="Choose how wide this image should appear">
-                <ButtonGroup>
-                  <Button
-                    variant={columnSpan === "25" ? "primary" : "secondary"}
-                    onClick={() => props.setAttributes({ columnSpan: "25" })}
-                  >
-                    25%
-                  </Button>
-                  <Button
-                    variant={columnSpan === "50" ? "primary" : "secondary"}
-                    onClick={() => props.setAttributes({ columnSpan: "50" })}
-                  >
-                    50%
-                  </Button>
-                  <Button
-                    variant={columnSpan === "100" ? "primary" : "secondary"}
-                    onClick={() => props.setAttributes({ columnSpan: "100" })}
-                  >
-                    100%
-                  </Button>
-                </ButtonGroup>
-              </BaseControl>
-            </PanelBody>
+            {wp.element.createElement(
+              PanelBody,
+              { title: "Gallery Layout", initialOpen: true },
+              wp.element.createElement(
+                BaseControl,
+                { label: "Image Width", help: "Choose how wide this image should appear" },
+                wp.element.createElement(
+                  WPButton,
+                  {
+                    variant: columnSpan === "25" ? "primary" : "secondary",
+                    onClick: () => props.setAttributes({ columnSpan: "25" }),
+                  },
+                  "25%",
+                ),
+                wp.element.createElement(
+                  WPButton,
+                  {
+                    variant: columnSpan === "50" ? "primary" : "secondary",
+                    onClick: () => props.setAttributes({ columnSpan: "50" }),
+                  },
+                  "50%",
+                ),
+                wp.element.createElement(
+                  WPButton,
+                  {
+                    variant: columnSpan === "100" ? "primary" : "secondary",
+                    onClick: () => props.setAttributes({ columnSpan: "100" }),
+                  },
+                  "100%",
+                ),
+              ),
+            )}
           </InspectorControls>
         </Fragment>
       );
@@ -178,35 +186,3 @@ wp.hooks.addFilter(
     return props;
   },
 );
-
-// ============================================================================
-// STEP 5: CUSTOMIZE GALLERY BLOCK (OPTIONAL)
-// ============================================================================
-// Register a variation or modify the default gallery block
-// This could add default settings or custom styling to the gallery container
-
-// TODO: Decide if we need to modify the gallery block itself
-// - Add custom classes to gallery container
-// - Set default columns
-// - Add additional gallery-level controls
-
-// Example:
-// wp.blocks.registerBlockVariation('core/gallery', {
-//   name: 'parsnip-page-builder-gallery',
-//   title: 'Page Builder Gallery',
-//   attributes: {
-//     className: 'parsnip-gallery',
-//   },
-//   isDefault: false,
-// });
-
-// ============================================================================
-// NEXT STEPS:
-// ============================================================================
-// 1. Implement the width selector control (RadioControl or ButtonGroup)
-// 2. Create proper CSS classes for the width options
-// 3. Add CSS to make the layout work (Tailwind or custom CSS)
-// 4. Test in editor - verify live updates work
-// 5. Test on frontend - verify saved content matches editor
-// 6. Consider adding more controls (alignment, spacing, etc.)
-// ============================================================================

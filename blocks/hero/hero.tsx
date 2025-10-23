@@ -54,8 +54,8 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
 
   return (
     <section {...wrapperProps}>
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute bottom-0 -translate-y-12 z-10 p-8 text-white max-w-4xl">
+      <div className="inset-0 bg-black/40" />
+      <div className="bottom-0 -translate-y-12 z-10 p-8 text-white max-w-4xl">
         <wp.blockEditor.RichText
           tagName="h1"
           className="text-7xl font-bold leading-tight mb-4"
@@ -73,7 +73,7 @@ const Edit = ({ attributes, setAttributes }: EditProps) => {
         />
       </div>
 
-      <div className="absolute top-4 right-4 pointer-events-auto">
+      <div className="top-4 right-4 pointer-events-auto">
         <wp.blockEditor.MediaUploadCheck>
           <wp.blockEditor.MediaUpload
             onSelect={onSelectMedia}
@@ -102,14 +102,14 @@ const Save = ({ attributes }: { attributes: Partial<Attributes> }) => {
   const { headline = "", text = "", mediaURL = "" } = attributes;
 
   const wrapperProps = wp.blockEditor.useBlockProps.save({
-    className: "relative w-full overflow-hidden bg-cover bg-center max-h-screen h-screen",
+    className: "relative w-full overflow-hidden bg-cover bg-center",
     style: mediaURL ? { backgroundImage: `url(${mediaURL})` } : undefined,
   });
 
   return (
     <section {...wrapperProps}>
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="absolute inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-12">
+      <div className="inset-0 bg-black/40" />
+      <div className="inset-x-0 bottom-0 p-8 text-white max-w-4xl pointer-events-none -translate-y-12">
         <wp.blockEditor.RichText.Content
           tagName="h1"
           className="text-6xl md:text-8xl font-extrabold leading-none"

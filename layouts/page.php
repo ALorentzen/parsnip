@@ -8,7 +8,7 @@ if (function_exists("get_field")) {
 }
 ?>
 
-<main class="min-h-screen p-8">
+<main class="p-8">
 <?php if ($show): ?>
   <?php get_template_part("template-parts/hero", null, ["hero" => $hero]); ?>
 <?php else: ?>

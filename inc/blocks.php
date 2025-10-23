@@ -78,14 +78,35 @@ add_action("init", function (): void {
       $editor_styles[] = $style_handle;
     }
 
-    register_block_type_from_metadata(
-      $source_dir,
-      array_filter([
-        "editor_script" => $handle,
-        "style" => $style_handles["style"] ?? null,
-        "editor_style" => $style_handles["editor_style"] ?? null,
-      ]),
-    );
+    // Register quote block as dynamic with PHP render callback
+    if ($slug === "quote") {
+      require_once get_theme_file_path("inc/render-quote-block.php");
+      // Ensure server-side knows about our custom attributes so they are persisted
+      $quote_attributes = [
+        "reviewer" => ["type" => "string", "default" => ""],
+        "year" => ["type" => "string", "default" => ""],
+        "quote" => ["type" => "string", "default" => ""],
+      ];
+      register_block_type_from_metadata(
+        $source_dir,
+        array_filter([
+          "editor_script" => $handle,
+          "style" => $style_handles["style"] ?? null,
+          "editor_style" => $style_handles["editor_style"] ?? null,
+          "render_callback" => "parsnip_render_quote_block",
+          "attributes" => $quote_attributes,
+        ]),
+      );
+    } else {
+      register_block_type_from_metadata(
+        $source_dir,
+        array_filter([
+          "editor_script" => $handle,
+          "style" => $style_handles["style"] ?? null,
+          "editor_style" => $style_handles["editor_style"] ?? null,
+        ]),
+      );
+    }
   }
 
   if ($editor_scripts !== []) {
@@ -102,4 +123,17 @@ add_action("init", function (): void {
       1,
     );
   }
+  // Ensure core/quote is rendered server-side so frontend always shows our fields.
+  // This overrides the core registration with a server-side render callback and attributes.
+  require_once get_theme_file_path("inc/render-quote-block.php");
+  $core_quote_attrs = [
+    "reviewer" => ["type" => "string", "default" => ""],
+    "year" => ["type" => "string", "default" => ""],
+    "quote" => ["type" => "string", "default" => ""],
+  ];
+  // Register/override core/quote as dynamic block
+  register_block_type("core/quote", [
+    "render_callback" => "parsnip_render_quote_block",
+    "attributes" => $core_quote_attrs,
+  ]);
 });

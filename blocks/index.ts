@@ -7,7 +7,9 @@
 
 // Custom Blocks
 import "./hero/hero.tsx";
-import "./simple-quote/simple-quote.tsx";
 
 // Core Block Modifications
 import "./gallery/gallery-grid.tsx";
+// Import quote block backend and filters only (frontend handled by PHP)
+import "./quote/filters";
+import "./quote/quote-backend.tsx";
