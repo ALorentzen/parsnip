@@ -1,0 +1,14 @@
+{
+  "apiVersion": 2,
+  "name": "parsnip/quote",
+  "title": "Quote",
+  "category": "theme",
+  "icon": "format-quote",
+  "attributes": {
+    "quote": { "type": "string" },
+    "reviewer": { "type": "string" },
+    "year": { "type": "string" }
+  },
+  "editorScript": "parsnip-quote-editor",
+  "editorStyle": "parsnip-editor-style"
+}
