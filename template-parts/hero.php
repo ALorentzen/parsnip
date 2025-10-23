@@ -15,15 +15,15 @@ $img_id = (int) ($hero["hero_image"] ?? 0);
 $src = $img_id ? wp_get_attachment_image_url($img_id, "full") : "";
 ?>
 
-<section class="fixed w-full min-h-fit h-[100dvh] lg:h-full overflow-y-scroll no-scrollbar text-white p-0">
+<section class="fixed w-full h-screen lg:h-full overflow-y-scroll no-scrollbar text-white p-0">
 
   <?php if ($src): ?>
     <div class="relative lg:inset-0 bg-cover bg-center h-full w-full" style="background-image:url('<?= esc_url(
       $src,
     ) ?>')"></div>
-    <div class="relative lg:absolute lg:inset-0 bg-black/40"></div>
+    <div class="relative lg:inset-0 bg-black/40"></div>
   <?php endif; ?>
-  <div class="relative lg:absolute lg:bottom-12 -translate-y-40 lg:-translate-y-20 px-4 lg:translate-x-12 lg:py-12 max-w-5xl mx-auto">
+  <div class="relative lg:bottom-12 -translate-y-40 lg:-translate-y-20 px-4 lg:translate-x-12 lg:py-12 max-w-5xl mx-auto">
     <h1 class="text-6xl lg:text-9xl font-bold"><?= esc_html($title) ?></h1>
     <?php if ($content): ?>
       <div class="mt-4 prose prose-invert"><?= wp_kses_post($content) ?></div>

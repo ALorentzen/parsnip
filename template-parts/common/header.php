@@ -7,7 +7,7 @@
 </head>
 
 <?php $adminOffset = is_admin_bar_showing() ? "top-0" : "top-0"; ?>
-<body <?php body_class(["site", "bg-neutral-900 h-screen ", "dark", $adminOffset]); ?>>
+<body <?php body_class(["site", "bg-neutral-900", "dark", $adminOffset]); ?>>
 <?php wp_body_open(); ?>
 
 <?php get_template_part("template-parts/nav-primary"); ?>

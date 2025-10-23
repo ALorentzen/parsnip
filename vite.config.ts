@@ -4,7 +4,7 @@ import { defineConfig, type ServerOptions } from "vite";
 import react from "@vitejs/plugin-react";
 import FullReload from "vite-plugin-full-reload";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-
+import externalGlobals from "rollup-plugin-external-globals";
 type CopyTarget = { src: string; dest: string };
 type ChunkInfo = { name: string };
 type AssetInfo = { name?: string | null };
@@ -87,6 +87,14 @@ export default defineConfig({
         ],
       },
     }),
+    externalGlobals({
+      "@wordpress/element": "wp.element",
+      "@wordpress/block-editor": "wp.blockEditor",
+      "@wordpress/components": "wp.components",
+      "@wordpress/hooks": "wp.hooks",
+      "@wordpress/blocks": "wp.blocks",
+      "@wordpress/compose": "wp.compose",
+    }),
     FullReload(["**/*.php"], { delay: 200 }),
     viteStaticCopy({ targets: copyTargets }),
   ],
@@ -97,28 +105,21 @@ export default defineConfig({
     strictPort: true,
     https: httpsOptions,
     hmr: { host: DOMAIN, protocol: USE_HTTPS ? "wss" : "ws", port: PORT },
-    cors: {
-      origin: [`${PROTOCOL}://${DOMAIN}`, `${PROTOCOL}://www.${DOMAIN}`],
-      credentials: true,
-    },
-    headers: {
-      "Access-Control-Allow-Origin": `${PROTOCOL}://${DOMAIN}`,
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
+    // CORS and headers removed for simplicity. Add back only if needed for cross-origin dev.
     allowedHosts: [DOMAIN, "localhost", "127.0.0.1"],
   },
   build: {
     outDir: "dist",
     manifest: true,
-    minify: false,
+    minify: true,
     rollupOptions: {
       input: {
         theme: "assets/js/main.tsx",
         editor: "assets/js/editor.tsx",
         ...entries,
       },
-      external: [/^@wordpress\/*/],
+      external: [/^@wordpress\//],
+
       output: {
         entryFileNames: (chunkInfo: ChunkInfo) =>
           entries[chunkInfo.name]
