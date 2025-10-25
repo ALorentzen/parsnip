@@ -34,6 +34,12 @@ add_action("init", function (): void {
       continue;
     }
 
+    // Skip blocks migrated to the parsnip-blocks plugin to avoid duplicate registrations
+    $migrated = ["parsnip/hero", "parsnip/gallery", "parsnip/quote"];
+    if (in_array($metadata["name"], $migrated, true)) {
+      continue;
+    }
+
     $handle = $metadata["editorScript"] ?? "";
     if (!is_string($handle) || $handle === "") {
       continue;
@@ -78,35 +84,15 @@ add_action("init", function (): void {
       $editor_styles[] = $style_handle;
     }
 
-    // Register quote block as dynamic with PHP render callback (server-side helper
-    // lives in inc/blocks/quote.php and is loaded via inc/index.php earlier).
-    if ($slug === "quote") {
-      // Ensure server-side knows about our custom attributes so they are persisted
-      $quote_attributes = [
-        "reviewer" => ["type" => "string", "default" => ""],
-        "year" => ["type" => "string", "default" => ""],
-        "quote" => ["type" => "string", "default" => ""],
-      ];
-      register_block_type_from_metadata(
-        $source_dir,
-        array_filter([
-          "editor_script" => $handle,
-          "style" => $style_handles["style"] ?? null,
-          "editor_style" => $style_handles["editor_style"] ?? null,
-          "render_callback" => "parsnip_render_quote_block",
-          "attributes" => $quote_attributes,
-        ]),
-      );
-    } else {
-      register_block_type_from_metadata(
-        $source_dir,
-        array_filter([
-          "editor_script" => $handle,
-          "style" => $style_handles["style"] ?? null,
-          "editor_style" => $style_handles["editor_style"] ?? null,
-        ]),
-      );
-    }
+    // Register block from metadata (attributes and editor script come from block.json and built assets)
+    register_block_type_from_metadata(
+      $source_dir,
+      array_filter([
+        "editor_script" => $handle,
+        "style" => $style_handles["style"] ?? null,
+        "editor_style" => $style_handles["editor_style"] ?? null,
+      ]),
+    );
   }
 
   if ($editor_scripts !== []) {
@@ -123,8 +109,22 @@ add_action("init", function (): void {
       1,
     );
   }
-  // We rely on the render_block interception (inc/render-quote-block.php) to
-  // render core/quote server-side. Avoid re-registering core blocks here to
-  // prevent duplicate registration warnings. The theme-specific quote block
-  // (if present) is registered above via register_block_type_from_metadata.
+
+  // If the theme provides its own quote block, remove the default core/quote
+  // from the inserter so editors get the theme's implementation. This makes
+  // edits to `blocks/quote/*` take effect when inserting a Quote block.
+  // Do the unregister later in init (priority 20) to ensure core has
+  // registered its blocks first.
+  add_action(
+    "init",
+    static function () use ($blocks_dir): void {
+      $theme_quote_meta = $blocks_dir . "/quote/block.json";
+      if (is_readable($theme_quote_meta) && function_exists("unregister_block_type")) {
+        unregister_block_type("core/quote");
+      }
+    },
+    20,
+  );
+  // All blocks are registered from their block.json metadata. Per-block server
+  // helpers (if any) should live under inc/blocks/ and be intentionally added.
 });
