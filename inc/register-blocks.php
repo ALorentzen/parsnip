@@ -16,6 +16,9 @@ add_action("init", function (): void {
       [],
       filemtime($css),
     );
+    // Enqueue the shared editor style for the block editor so Tailwind
+    // utilities and theme editor styles are available inside Gutenberg.
+    $editor_styles[] = "parsnip-editor-style";
   }
 
   $vite = parsnip_get_vite_env();
@@ -106,15 +109,54 @@ add_action("init", function (): void {
   if ($editor_scripts !== []) {
     add_action(
       "enqueue_block_editor_assets",
-      static function () use ($editor_scripts, $editor_styles): void {
+      static function () use ($editor_scripts, $editor_styles, $theme_uri): void {
         foreach (array_unique($editor_scripts) as $script_handle) {
           wp_enqueue_script($script_handle);
         }
         foreach (array_unique($editor_styles) as $style_handle) {
           wp_enqueue_style($style_handle);
         }
+
+        // Debugging helper: attach an inline script to the first editor script
+        // to log whether the theme editor CSS is present in the editor page.
+        $first = array_values(array_unique($editor_scripts))[0] ?? null;
+        if ($first !== null && is_string($first)) {
+          $css_url = $theme_uri . "/dist/theme.css";
+          $js =
+            "(() => {\n" .
+            "  try {\n" .
+            "    const found = !!document.querySelector('link[href\\*=" .
+            '\"/dist/theme.css\"' .
+            "]');\n" .
+            "    console.log('parsnip: editor CSS present?', found, 'css url:', '" .
+            esc_js($css_url) .
+            "');\n" .
+            "    console.log('parsnip: stylesheets:', Array.from(document.styleSheets).map(s=>s.href).filter(Boolean));\n" .
+            "  } catch (e) { console.log('parsnip: editor css check failed', e); }\n" .
+            "})();";
+          wp_add_inline_script($first, $js);
+        }
       },
       1,
+    );
+
+    // Extra debug: ensure we log in the admin footer for block editor pages.
+    // This helps verify the editor page is loading and whether stylesheets are present.
+    add_action(
+      "admin_print_footer_scripts",
+      function (): void {
+        if (!function_exists("get_current_screen")) {
+          return;
+        }
+        $screen = get_current_screen();
+        if (!$screen || !property_exists($screen, "is_block_editor") || !$screen->is_block_editor) {
+          return;
+        }
+
+        // Print a tiny script that logs stylesheet URLs and a marker.
+        echo "<script>console.log('parsnip: admin footer loaded'); try{console.log('parsnip: stylesheets', Array.from(document.styleSheets).map(s=>s.href).filter(Boolean));}catch(e){console.log('parsnip: footer log failed', e);} </script>";
+      },
+      999,
     );
   }
   // We rely on the render_block interception (inc/blocks/quote.php) to
