@@ -2,5 +2,8 @@
   "explorer.compactFolders": false,
   "workbench.tree.indent": 22,
   "workbench.tree.renderIndentGuides": "always",
-  "workbench.list.smoothScrolling": true
+  "workbench.list.smoothScrolling": true,
+  "terminal.integrated.accessibleViewFocusOnCommandExecution": true,
+  "github.copilot.chat.agent.currentEditorContext.enabled": true,
+  "github.copilot.chat.terminalChatLocation": "quickChat"
 }
